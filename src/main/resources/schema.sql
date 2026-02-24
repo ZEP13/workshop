@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     lastname VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(255) NOT NULL,
-    date_creation DATE
+    createdAt DATE
 );
 
 CREATE TABLE IF NOT EXISTS appointment (
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS appointment (
     id_client INT NOT NULL,
     id_creator INT NOT NULL,
     status VARCHAR(255) NOT NULL,
-    date_creation DATE,
+    createdAt DATE,
     CONSTRAINT fk_users_client
         FOREIGN KEY (id_client)
         REFERENCES users(id)
