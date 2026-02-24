@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -21,7 +20,7 @@ import java.time.LocalTime;
 @Setter
 @Builder
 @Table(name = "appointment")
-public class AppointmentEntity extends BaseEntity{
+public class AppointmentEntity extends BaseEntity {
     @Column(nullable = false)
     private LocalDate date;
 
@@ -32,7 +31,7 @@ public class AppointmentEntity extends BaseEntity{
     private Long id_client;
 
     @Column(nullable = false)
-    private Long id_users;
+    private Long id_creator;
 
     @Column(nullable = false)
     @ColumnDefault("PLANIFIE")
