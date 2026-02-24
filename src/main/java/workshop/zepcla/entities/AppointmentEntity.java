@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ public class AppointmentEntity extends BaseEntity{
     private Long id_users;
 
     @Column(nullable = false)
+    @ColumnDefault("PLANIFIE")
     private String status;
 
 }
