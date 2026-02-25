@@ -28,10 +28,10 @@ public class AppointmentEntity extends BaseEntity {
     private LocalTime time;
 
     @Column(nullable = false)
-    private Long id_client;
+    private UserEntity id_client;
 
     @Column(nullable = false)
-    private Long id_creator;
+    private UserEntity id_creator;
 
     @Column(nullable = false)
     @ColumnDefault("PLANIFIE")
