@@ -1,0 +1,30 @@
+<changeSet id="001-create-users" author="CLBI">
+    <createTable tableName="users">
+        <column name="id" type="SERIAL">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="username" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="mail" type="TEXT">
+            <constraints nullable="false" unique="true"/>
+        </column>
+        <column name="phone" type="VARCHAR(20)">
+            <constraints nullable="false" unique="true"/>
+        </column>
+        <column name="firstname" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="lastname" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="password" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="role" type="VARCHAR(50)" defaultValue="CLIENT">
+            <constraints nullable="false"/>
+        </column>
+        <column name="created_at" type="TIMESTAMP"
+                defaultValueComputed="CURRENT_TIMESTAMP"/>
+    </createTable>
+</changeSet>
