@@ -34,6 +34,6 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @ColumnDefault("client")
+    @ColumnDefault("CLIENT")
     private String role;
 }

@@ -19,13 +19,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/update")
-    @PreAuthorize("hasAnyRole('client','ADMIN')")
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     public void login(@RequestBody UserDto request) {
 
     }
 
     @GetMapping("/current")
-    @PreAuthorize("hasAnyRole('client','ADMIN')")
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     public UserDto getCurrentUser() {
         Long userId = userService.getCurrentUserId();
         return userService.getUserById(userId);

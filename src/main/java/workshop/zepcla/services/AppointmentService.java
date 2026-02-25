@@ -26,7 +26,7 @@ public class AppointmentService {
     private final AppointmentMapper appointmentMapper;
 
     public AppointmentService(AppointmentRepository appointmentRepository,
-                              AppointmentMapper appointmentMapper) {
+            AppointmentMapper appointmentMapper) {
         this.appointmentRepository = appointmentRepository;
         this.appointmentMapper = appointmentMapper;
     }
@@ -40,7 +40,7 @@ public class AppointmentService {
         }
 
         Long clientId = dto.id_client().id();
-        boolean clientConflict = appointmentRepository.existsByIdClientAndDateAndTime(clientId, date, time);
+        boolean clientConflict = appointmentRepository.existsByClientIdAndDateAndTime(clientId, date, time);
         if (clientConflict) {
             throw new ClientAlreadyHaveAppointment("on " + date + " at " + time);
         }
@@ -85,14 +85,14 @@ public class AppointmentService {
     }
 
     public List<AppointmentDto> getAppointmentsByClient(Long id_client) {
-        return appointmentRepository.findByIdClient(id_client)
+        return appointmentRepository.findByClientId(id_client)
                 .stream()
                 .map(appointmentMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     public List<AppointmentDto> getAppointmentsByCreator(Long id_creator) {
-        return appointmentRepository.findByIdClient(id_creator)
+        return appointmentRepository.findByClientId(id_creator)
                 .stream()
                 .map(appointmentMapper::toDto)
                 .collect(Collectors.toList());

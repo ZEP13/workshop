@@ -6,7 +6,6 @@ import java.util.Date;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,18 +13,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
 public class JwtService {
 
     private final UserService service;
+    private final Key key;
+    private final long expirationTime;
 
-    @Value("${jwt.secret}")
-    private static String SECRET;
+    public JwtService(
+            UserService service,
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") long expirationTime) {
 
-    @Value("${jwt.expiration}")
-    private static long EXPIRATION_TIME;
-
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        this.service = service;
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.expirationTime = expirationTime;
+    }
 
     public String generateToken(UserDetails user) {
         return Jwts.builder()
@@ -33,8 +35,8 @@ public class JwtService {
                 .claim("roles", user.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).toList())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -49,16 +51,13 @@ public class JwtService {
 
     public String refreshToken(String refreshToken) {
         String username = extractUsername(refreshToken);
-
         UserDetails user = service.loadUserByUsername(username);
 
         if (!isTokenValid(refreshToken, user)) {
             throw new IllegalArgumentException("Invalid refresh token");
         }
 
-        String newAccessToken = generateToken(user);
-
-        return newAccessToken;
+        return generateToken(user);
     }
 
     private boolean isTokenExpired(String token) {
