@@ -57,8 +57,8 @@ public class UserMapper {
             return null;
         }
         UserEntity entity = new UserEntity();
-        entity.setEmail(userDto.email());
-        entity.setPassword(userDto.password());
+        entity.setEmail(userDto.getUsername());
+        entity.setPassword(userDto.getPassword());
         return entity;
     }
 }
