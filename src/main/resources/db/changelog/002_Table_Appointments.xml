@@ -1,6 +1,6 @@
 <changeSet id="002-create-appointment" author="toi">
     <createTable tableName="appointment">
-        <column name="id" type="BIGSERIAL">
+        <column name="id" type="SERIAL">
             <constraints primaryKey="true"/>
         </column>
         <column name="date" type="DATE">
@@ -9,10 +9,10 @@
         <column name="time" type="TIME">
             <constraints nullable="false"/>
         </column>
-        <column name="id_client" type="BIGINT">
+        <column name="id_client" type="INT">
             <constraints nullable="false"/>
         </column>
-        <column name="id_creator" type="BIGINT">
+        <column name="id_creator" type="INT">
             <constraints nullable="false"/>
         </column>
         <column name="status" type="VARCHAR(50)" defaultValue="PLANIFIE">
