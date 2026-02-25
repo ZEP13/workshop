@@ -1,11 +1,13 @@
 package workshop.zepcla.mappers;
 
+import org.springframework.stereotype.Component;
 import workshop.zepcla.dto.appointmentDto.AppointmentCreationDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentDto;
 import workshop.zepcla.dto.userDto.UserDto;
 import workshop.zepcla.entities.AppointmentEntity;
 import workshop.zepcla.entities.UserEntity;
 
+@Component
 public class AppointmentMapper {
 
     public AppointmentDto toDto(AppointmentEntity appointment) {
