@@ -40,7 +40,7 @@ public class AppointmentService {
         }
 
         Long clientId = dto.id_client().id();
-        boolean clientConflict = appointmentRepository.existsByClientIdAndDateAndTime(clientId, date, time);
+        boolean clientConflict = appointmentRepository.existsByClientIdAndDateAndTime(client_id, date, time);
         if (clientConflict) {
             throw new ClientAlreadyHaveAppointment("on " + date + " at " + time);
         }

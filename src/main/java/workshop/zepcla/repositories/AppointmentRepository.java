@@ -11,11 +11,11 @@ import java.util.List;
 @Repository
 public interface AppointmentRepository extends JpaRepository<AppointmentEntity, Long> {
 
-    boolean existsByClientIdAndDateAndTime(Long clientId, LocalDate date, LocalTime time);
+    boolean existsByClientIdAndDateAndTime(Long id_client, LocalDate date, LocalTime time);
 
     boolean existsByDateAndTime(LocalDate date, LocalTime time);
 
-    List<AppointmentEntity> findByClientId(Long clientId);
+    List<AppointmentEntity> findByClientId(Long id_client);
 
     List<AppointmentEntity> findByCreatorId(Long creatorId);
 
