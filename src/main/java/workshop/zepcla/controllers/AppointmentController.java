@@ -50,9 +50,15 @@ public class AppointmentController {
         return ResponseEntity.ok(list);
     }
 
-    @GetMapping("/by-client/{clientId}")
-    public ResponseEntity<List<AppointmentDto>> getAppointmentsByClient(@PathVariable Long clientId) {
-        List<AppointmentDto> list = appointmentService.getAppointmentsByClient(clientId);
+    @GetMapping("/by-client/{id_client}")
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByClient(@PathVariable Long id_client) {
+        List<AppointmentDto> list = appointmentService.getAppointmentsByClient(id_client);
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/by-creator/{id_creator}")
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByCreator(@PathVariable Long id_creator) {
+        List<AppointmentDto> list = appointmentService.getAppointmentsByCreator(id_creator);
         return ResponseEntity.ok(list);
     }
 }
