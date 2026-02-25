@@ -1,0 +1,40 @@
+<changeSet id="002-create-appointment" author="toi">
+    <createTable tableName="appointment">
+        <column name="id" type="BIGSERIAL">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="date" type="DATE">
+            <constraints nullable="false"/>
+        </column>
+        <column name="time" type="TIME">
+            <constraints nullable="false"/>
+        </column>
+        <column name="id_client" type="BIGINT">
+            <constraints nullable="false"/>
+        </column>
+        <column name="id_creator" type="BIGINT">
+            <constraints nullable="false"/>
+        </column>
+        <column name="status" type="VARCHAR(50)" defaultValue="PLANIFIE">
+            <constraints nullable="false"/>
+        </column>
+        <column name="created_at" type="TIMESTAMP"
+                defaultValueComputed="CURRENT_TIMESTAMP"/>
+    </createTable>
+
+    <addForeignKeyConstraint
+            baseTableName="appointment"
+            baseColumnNames="id_client"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            constraintName="fk_users_client"
+            onDelete="CASCADE"/>
+
+    <addForeignKeyConstraint
+            baseTableName="appointment"
+            baseColumnNames="id_creator"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            constraintName="fk_users_creator"
+            onDelete="CASCADE"/>
+</changeSet>
