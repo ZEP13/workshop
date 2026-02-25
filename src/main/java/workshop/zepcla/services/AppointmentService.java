@@ -39,8 +39,8 @@ public class AppointmentService {
             throw new ClientCantHaveAppointmentInPast("on " + date + " at " + time + "Please select a valid date");
         }
 
-        Long clientId = dto.id_client().id();
-        boolean clientConflict = appointmentRepository.existsByClientIdAndDateAndTime(client_id, date, time);
+        Long id_client = dto.id_client().id();
+        boolean clientConflict = appointmentRepository.existsByClientIdAndDateAndTime(id_client, date, time);
         if (clientConflict) {
             throw new ClientAlreadyHaveAppointment("on " + date + " at " + time);
         }
