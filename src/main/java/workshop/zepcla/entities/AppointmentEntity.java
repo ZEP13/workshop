@@ -35,16 +35,18 @@ public class AppointmentEntity extends BaseEntity {
     private Integer duration;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_client", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_client", referencedColumnName = "id")
     private UserEntity client;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_creator", referencedColumnName = "id", nullable = false)
-    @ColumnDefault("NULL")
+    @JoinColumn(name = "id_creator", referencedColumnName = "id")
+    @ColumnDefault("'NULL'")
     private UserEntity creator;
 
     @Column(nullable = false)
-    @ColumnDefault("PLANIFIE")
+    @ColumnDefault("'PLANIFIED'")
     private String status;
 
+    @Column(nullable = true, unique = true)
+    private String token;
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/appointments")
+@RequestMapping("/logged/appointments")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -26,7 +26,7 @@ public class AppointmentController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}/cancel")
+    @PutMapping("/cancel/{id}")
     public ResponseEntity<AppointmentDto> cancelAppointment(@PathVariable Long id) {
         AppointmentDto cancelled = appointmentService.cancelAppointment(id);
         return ResponseEntity.ok(cancelled);
@@ -47,6 +47,12 @@ public class AppointmentController {
     @GetMapping("/by-date")
     public ResponseEntity<List<AppointmentDto>> getAppointmentsByDate(@RequestParam LocalDate date) {
         List<AppointmentDto> list = appointmentService.getAppointmentsByDate(date);
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/my-appointments")
+    public ResponseEntity<List<AppointmentDto>> getMyAppointments() {
+        List<AppointmentDto> list = appointmentService.getAppointmentsByCurrentClient();
         return ResponseEntity.ok(list);
     }
 

@@ -42,6 +42,7 @@ public class AppointmentMapper {
                 appointment.getTime(),
                 clientDto,
                 creatorDto,
+                appointment.getDuration(),
                 appointment.getStatus());
     }
 
@@ -53,6 +54,10 @@ public class AppointmentMapper {
         AppointmentEntity entity = new AppointmentEntity();
         entity.setDate(dto.date_appointment());
         entity.setTime(dto.time_appointment());
+
+        entity.setDuration(dto.duration());
+
+        entity.setStatus("PLANIFIED");
 
         if (dto.id_client() != null) {
             UserEntity client = new UserEntity();

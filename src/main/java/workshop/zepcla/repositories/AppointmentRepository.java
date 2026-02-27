@@ -8,6 +8,7 @@ import workshop.zepcla.entities.UserEntity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<AppointmentEntity, Long> {
@@ -20,4 +21,8 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     List<AppointmentEntity> findByDate(LocalDate date);
 
     List<AppointmentEntity> findByCreator(UserEntity creator);
+
+    Optional<AppointmentEntity> findByToken(String token);
+
+    List<AppointmentEntity> findAllByToken(String token);
 }

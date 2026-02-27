@@ -5,47 +5,48 @@
         xsi:schemaLocation="
            http://www.liquibase.org/xml/ns/dbchangelog
            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
-	<changeSet id="002-create-appointment" author="toi">
-	    <createTable tableName="appointment">
-		<column name="id" type="SERIAL">
-		    <constraints primaryKey="true"/>
-		</column>
-		<column name="date" type="DATE">
-		    <constraints nullable="false"/>
-		</column>
-		<column name="time" type="TIME">
-		    <constraints nullable="false"/>
-		</column>
-		<column name="duration" type="INT">
-		    <constraints nullable="false"/>
-		</column>
-		<column name="id_client" type="INT">
-		    <constraints nullable="false"/>
-		</column>
-		<column name="id_creator" type="INT" defaultValue="NULL">
-		    <constraints nullable="false"/>
-		</column>
-		<column name="status" type="VARCHAR(50)" defaultValue="PLANIFIE">
-		    <constraints nullable="false"/>
-		</column>
-		<column name="created_at" type="TIMESTAMP"
-			defaultValueComputed="CURRENT_TIMESTAMP"/>
-	    </createTable>
-
-	    <addForeignKeyConstraint
-		    baseTableName="appointment"
-		    baseColumnNames="id_client"
-		    referencedTableName="users"
-		    referencedColumnNames="id"
-		    constraintName="fk_users_client"
-		    onDelete="CASCADE"/>
-
-	    <addForeignKeyConstraint
-		    baseTableName="appointment"
-		    baseColumnNames="id_creator"
-		    referencedTableName="users"
-		    referencedColumnNames="id"
-		    constraintName="fk_users_creator"
-		    onDelete="CASCADE"/>
-	</changeSet>
+    <changeSet id="002-create-appointment" author="toi">
+        <createTable tableName="appointment">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="TIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_client" type="INT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="id_creator" type="INT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="status" type="VARCHAR(50)" defaultValue="PLANIFIED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP"
+                defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="appointment"
+            baseColumnNames="id_client"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            constraintName="fk_users_client"
+            onDelete="CASCADE"/>
+        <addForeignKeyConstraint
+            baseTableName="appointment"
+            baseColumnNames="id_creator"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            constraintName="fk_users_creator"
+            onDelete="CASCADE"/>
+    </changeSet>
 </databaseChangeLog>

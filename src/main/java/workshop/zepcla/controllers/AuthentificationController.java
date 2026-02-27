@@ -8,10 +8,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.userDto.UserCreationDto;
 import workshop.zepcla.dto.userDto.UserLoginDto;
@@ -20,7 +20,7 @@ import workshop.zepcla.services.UserService;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/auth")
 public class AuthentificationController {
 
     private final UserService userService;

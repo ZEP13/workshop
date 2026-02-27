@@ -131,4 +131,5 @@ point que l'on ajoute:
 	-> si professionnel réserve, son id va pour creator et l'id du client va pour client
 
     
-
+    pas besoin d'etre connecte pour voir les disponibilités, mais il faut etre connecté pour prendre un rendez-vous ou annuler un rendez-vous
+    autrement dit un mode de reservation sans connection

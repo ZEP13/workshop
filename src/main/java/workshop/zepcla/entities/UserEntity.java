@@ -20,17 +20,23 @@ import lombok.Setter;
 @Table(name = "users")
 public class UserEntity extends BaseEntity {
 
+    @Column(nullable = false)
     private String firstname;
+
+    @Column(nullable = false)
     private String lastname;
 
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
     private String phone;
 
     @Column(nullable = false)
     private String password;
 
-    @ColumnDefault("CLIENT")
-    private String role;
+    @Builder.Default
+    @Column(nullable = false)
+    @ColumnDefault("'CLIENT'")
+    private String role = "CLIENT";
 }

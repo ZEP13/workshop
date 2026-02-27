@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.userDto.UserCreationDto;
 import workshop.zepcla.dto.userDto.UserDto;
+import workshop.zepcla.entities.AppointmentEntity;
 import workshop.zepcla.entities.UserEntity;
 import workshop.zepcla.exceptions.userException.UserAlreadyExistsException;
 import workshop.zepcla.exceptions.userException.UserEmailNotFoundException;
 import workshop.zepcla.exceptions.userException.UserIdNotFoundException;
 import workshop.zepcla.exceptions.userException.UsernameNotFoundException;
 import workshop.zepcla.mappers.UserMapper;
+import workshop.zepcla.repositories.AppointmentRepository;
 import workshop.zepcla.repositories.UserRepository;
 
 @AllArgsConstructor
@@ -27,6 +29,7 @@ public class UserService implements UserDetailsService {
     private final UserMapper userMapper;
     private final UserRepository repo;
     private final PasswordEncoder passwordEncoder;
+    private final AppointmentRepository appointmentRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) {
@@ -48,9 +51,21 @@ public class UserService implements UserDetailsService {
             throw new UserAlreadyExistsException("Username already exists");
         }
 
+        // 1️⃣ Créer le nouvel utilisateur
         UserEntity newUser = userMapper.toEntityForCreation(userCreationDto);
         newUser.setPassword(passwordEncoder.encode(userCreationDto.password()));
         repo.save(newUser);
+
+        // 2️⃣ Si token fourni, associer les RDV publics existants
+        // Dans UserService.save()
+        if (userCreationDto.tokenRdv() != null && !userCreationDto.tokenRdv().isEmpty()) {
+            List<AppointmentEntity> appointments = appointmentRepository.findAllByToken(userCreationDto.tokenRdv());
+            for (AppointmentEntity appt : appointments) {
+                appt.setClient(newUser);
+                appt.setToken(null);
+                appointmentRepository.save(appt); // on peut sauvegarder directement ici
+            }
+        }
     }
 
     public void updateUser(Long id, UserCreationDto userCreationDto) {

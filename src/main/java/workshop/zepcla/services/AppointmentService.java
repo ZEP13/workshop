@@ -6,21 +6,23 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.appointmentDto.AppointmentCreationDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentDto;
-import workshop.zepcla.dto.userDto.UserDto;
+import workshop.zepcla.dto.appointmentDto.AppointmentPublicCreationDto;
 import workshop.zepcla.entities.AppointmentEntity;
 import workshop.zepcla.entities.UserEntity;
 import workshop.zepcla.exceptions.appointmentException.AppointmentNotFound;
 import workshop.zepcla.exceptions.appointmentException.ClientAlreadyHaveAppointment;
 import workshop.zepcla.exceptions.appointmentException.ClientCantHaveAppointmentInPast;
 import workshop.zepcla.exceptions.appointmentException.NoAvaibleAppointment;
+import workshop.zepcla.exceptions.userException.UserIdNotFoundException;
 import workshop.zepcla.mappers.AppointmentMapper;
-import workshop.zepcla.mappers.UserMapper;
 import workshop.zepcla.repositories.AppointmentRepository;
+import workshop.zepcla.repositories.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,10 +32,45 @@ public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final AppointmentMapper appointmentMapper;
+    private final UserRepository userRepository;
     private final UserService userService;
-    private final UserMapper userMapper;
+
+    // Créer un RDV sans compte
+    public AppointmentEntity createAppointmentWithoutAccount(AppointmentPublicCreationDto dto) {
+        AppointmentEntity appointment = new AppointmentEntity();
+        appointment.setDate(dto.date_appointment());
+        appointment.setTime(dto.time_appointment());
+        appointment.setDuration(dto.duration());
+        appointment.setToken(UUID.randomUUID().toString());
+        appointment.setStatus("PLANIFIED");
+        appointment.setClient(null);
+        appointment.setCreator(null);
+        appointmentRepository.save(appointment);
+        return appointment;
+    }
+
+    public AppointmentEntity getAppointmentByToken(String token) {
+        return appointmentRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Rendez-vous introuvable"));
+    }
+
+    public AppointmentEntity cancelAppointmentByToken(String token) {
+        AppointmentEntity appointment = getAppointmentByToken(token);
+        appointment.setStatus("CANCELLED");
+        appointmentRepository.save(appointment);
+        return appointment;
+    }
+
+    public List<AppointmentEntity> getAppointmentsByToken(String token) {
+        return appointmentRepository.findAllByToken(token); // Méthode à créer dans le repo
+    }
+
+    public AppointmentEntity save(AppointmentEntity appointment) {
+        return appointmentRepository.save(appointment);
+    }
 
     public AppointmentDto createAppointment(AppointmentCreationDto dto) {
+
         LocalDate date = dto.date_appointment();
         LocalTime time = dto.time_appointment();
 
@@ -43,10 +80,9 @@ public class AppointmentService {
                     "on " + date + " at " + time + ". Please select a valid date");
         }
 
-        // Récupérer l'utilisateur (client) depuis l'ID
-        UserDto client = userService.getUserById(dto.id_client().id());
+        // Récupérer l'utilisateur connecté
+        UserEntity clientEntity = userService.getCurrentUserEntity(); // méthode existante dans UserService
 
-        UserEntity clientEntity = userMapper.toEntity(client);
         // Vérifier si le client a déjà un rendez-vous à cette date/heure
         boolean clientConflict = appointmentRepository.existsByClientAndDateAndTime(clientEntity, date, time);
         if (clientConflict) {
@@ -71,7 +107,7 @@ public class AppointmentService {
         AppointmentEntity appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppointmentNotFound(" with id " + id));
 
-        appointment.setStatus("ANNULE");
+        appointment.setStatus("CANCELLED");
         return appointmentMapper.toDto(appointmentRepository.save(appointment));
     }
 
@@ -95,10 +131,19 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
-    public List<AppointmentDto> getAppointmentsByClient(Long id_client) {
-        UserDto client = userService.getUserById(id_client);
+    public List<AppointmentDto> getAppointmentsByCurrentClient() {
 
-        UserEntity clientEntity = userMapper.toEntity(client);
+        UserEntity clientEntity = userService.getCurrentUserEntity();
+        return appointmentRepository.findByClient(clientEntity)
+                .stream()
+                .map(appointmentMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<AppointmentDto> getAppointmentsByClient(Long id_client) {
+
+        UserEntity clientEntity = userRepository.findById(id_client)
+                .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + id_client));
         return appointmentRepository.findByClient(clientEntity)
                 .stream()
                 .map(appointmentMapper::toDto)
@@ -106,9 +151,8 @@ public class AppointmentService {
     }
 
     public List<AppointmentDto> getAppointmentsByCreator(Long id_creator) {
-        UserDto creator = userService.getUserById(id_creator);
-
-        UserEntity creatorEntity = userMapper.toEntity(creator);
+        UserEntity creatorEntity = userRepository.findById(id_creator)
+                .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + id_creator));
         return appointmentRepository.findByCreator(creatorEntity)
                 .stream()
                 .map(appointmentMapper::toDto)
