@@ -36,37 +36,25 @@ public class AppointmentService {
     private final UserService userService;
 
     // Créer un RDV sans compte
-    public AppointmentEntity createAppointmentWithoutAccount(AppointmentPublicCreationDto dto) {
-        AppointmentEntity appointment = new AppointmentEntity();
-        appointment.setDate(dto.date_appointment());
-        appointment.setTime(dto.time_appointment());
-        appointment.setDuration(dto.duration());
+    public void createAppointmentWithoutAccount(AppointmentPublicCreationDto dto) {
+        AppointmentEntity appointment = appointmentMapper.toEntityForPublicCreation(dto);
         appointment.setToken(UUID.randomUUID().toString());
         appointment.setStatus("PLANIFIED");
-        appointment.setClient(null);
-        appointment.setCreator(null);
         appointmentRepository.save(appointment);
-        return appointment;
     }
 
-    public AppointmentEntity getAppointmentByToken(String token) {
-        return appointmentRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Rendez-vous introuvable"));
+    public AppointmentPublicCreationDto getAppointmentByToken(String token) {
+        AppointmentEntity ap = appointmentRepository.findByToken(token)
+                .orElseThrow(() -> new AppointmentNotFound(" with token " + token));
+        return appointmentMapper.toPublicCreationDto(ap);
     }
 
-    public AppointmentEntity cancelAppointmentByToken(String token) {
-        AppointmentEntity appointment = getAppointmentByToken(token);
+    public AppointmentPublicCreationDto cancelAppointmentByToken(String token) {
+        AppointmentEntity appointment = appointmentRepository.findByToken(token)
+                .orElseThrow(() -> new AppointmentNotFound(" with token " + token));
         appointment.setStatus("CANCELLED");
         appointmentRepository.save(appointment);
-        return appointment;
-    }
-
-    public List<AppointmentEntity> getAppointmentsByToken(String token) {
-        return appointmentRepository.findAllByToken(token); // Méthode à créer dans le repo
-    }
-
-    public AppointmentEntity save(AppointmentEntity appointment) {
-        return appointmentRepository.save(appointment);
+        return appointmentMapper.toPublicCreationDto(appointment);
     }
 
     public AppointmentDto createAppointment(AppointmentCreationDto dto) {

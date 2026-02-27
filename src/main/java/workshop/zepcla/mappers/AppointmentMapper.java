@@ -3,6 +3,7 @@ package workshop.zepcla.mappers;
 import org.springframework.stereotype.Component;
 import workshop.zepcla.dto.appointmentDto.AppointmentCreationDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentDto;
+import workshop.zepcla.dto.appointmentDto.AppointmentPublicCreationDto;
 import workshop.zepcla.dto.userDto.UserDto;
 import workshop.zepcla.entities.AppointmentEntity;
 import workshop.zepcla.entities.UserEntity;
@@ -70,6 +71,31 @@ public class AppointmentMapper {
             creator.setId(dto.id_creator().id());
             entity.setCreator(creator);
         }
+
+        return entity;
+    }
+
+    public AppointmentPublicCreationDto toPublicCreationDto(AppointmentEntity appointment) {
+        if (appointment == null) {
+            return null;
+        }
+
+        return new AppointmentPublicCreationDto(
+                appointment.getDate(),
+                appointment.getTime(),
+                appointment.getDuration(),
+                appointment.getStatus());
+    }
+
+    public AppointmentEntity toEntityForPublicCreation(AppointmentPublicCreationDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        AppointmentEntity entity = new AppointmentEntity();
+        entity.setDate(dto.date_appointment());
+        entity.setTime(dto.time_appointment());
+        entity.setDuration(dto.duration());
 
         return entity;
     }
