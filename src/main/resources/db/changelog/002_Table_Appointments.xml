@@ -1,40 +1,48 @@
-<changeSet id="002-create-appointment" author="toi">
-    <createTable tableName="appointment">
-        <column name="id" type="SERIAL">
-            <constraints primaryKey="true"/>
-        </column>
-        <column name="date" type="DATE">
-            <constraints nullable="false"/>
-        </column>
-        <column name="time" type="TIME">
-            <constraints nullable="false"/>
-        </column>
-        <column name="id_client" type="INT">
-            <constraints nullable="false"/>
-        </column>
-        <column name="id_creator" type="INT">
-            <constraints nullable="false"/>
-        </column>
-        <column name="status" type="VARCHAR(50)" defaultValue="PLANIFIE">
-            <constraints nullable="false"/>
-        </column>
-        <column name="created_at" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP"/>
-    </createTable>
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.liquibase.org/xml/ns/dbchangelog
+           http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+	<changeSet id="002-create-appointment" author="toi">
+	    <createTable tableName="appointment">
+		<column name="id" type="SERIAL">
+		    <constraints primaryKey="true"/>
+		</column>
+		<column name="date" type="DATE">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="time" type="TIME">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="id_client" type="INT">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="id_creator" type="INT">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="status" type="VARCHAR(50)" defaultValue="PLANIFIE">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="created_at" type="TIMESTAMP"
+			defaultValueComputed="CURRENT_TIMESTAMP"/>
+	    </createTable>
 
-    <addForeignKeyConstraint
-            baseTableName="appointment"
-            baseColumnNames="id_client"
-            referencedTableName="users"
-            referencedColumnNames="id"
-            constraintName="fk_users_client"
-            onDelete="CASCADE"/>
+	    <addForeignKeyConstraint
+		    baseTableName="appointment"
+		    baseColumnNames="id_client"
+		    referencedTableName="users"
+		    referencedColumnNames="id"
+		    constraintName="fk_users_client"
+		    onDelete="CASCADE"/>
 
-    <addForeignKeyConstraint
-            baseTableName="appointment"
-            baseColumnNames="id_creator"
-            referencedTableName="users"
-            referencedColumnNames="id"
-            constraintName="fk_users_creator"
-            onDelete="CASCADE"/>
-</changeSet>
+	    <addForeignKeyConstraint
+		    baseTableName="appointment"
+		    baseColumnNames="id_creator"
+		    referencedTableName="users"
+		    referencedColumnNames="id"
+		    constraintName="fk_users_creator"
+		    onDelete="CASCADE"/>
+	</changeSet>
+</databaseChangeLog>

@@ -48,7 +48,7 @@ public class AppointmentService {
 
         UserEntity clientEntity = userMapper.toEntity(client);
         // Vérifier si le client a déjà un rendez-vous à cette date/heure
-        boolean clientConflict = appointmentRepository.existsByIdClientAndDateAndTime(clientEntity, date, time);
+        boolean clientConflict = appointmentRepository.existsByClientAndDateAndTime(clientEntity, date, time);
         if (clientConflict) {
             throw new ClientAlreadyHaveAppointment("on " + date + " at " + time);
         }
@@ -61,7 +61,7 @@ public class AppointmentService {
 
         // Mapper le DTO vers l'entité et sauvegarder
         AppointmentEntity entity = appointmentMapper.toEntityForCreation(dto);
-        entity.setIdClient(clientEntity); // S'assurer que l'entité a bien le client
+        entity.setClient(clientEntity);
 
         AppointmentEntity saved = appointmentRepository.save(entity);
         return appointmentMapper.toDto(saved);
@@ -99,7 +99,7 @@ public class AppointmentService {
         UserDto client = userService.getUserById(id_client);
 
         UserEntity clientEntity = userMapper.toEntity(client);
-        return appointmentRepository.findByIdClient(clientEntity)
+        return appointmentRepository.findByClient(clientEntity)
                 .stream()
                 .map(appointmentMapper::toDto)
                 .collect(Collectors.toList());
@@ -109,7 +109,7 @@ public class AppointmentService {
         UserDto creator = userService.getUserById(id_creator);
 
         UserEntity creatorEntity = userMapper.toEntity(creator);
-        return appointmentRepository.findByIdCreator(creatorEntity)
+        return appointmentRepository.findByCreator(creatorEntity)
                 .stream()
                 .map(appointmentMapper::toDto)
                 .collect(Collectors.toList());

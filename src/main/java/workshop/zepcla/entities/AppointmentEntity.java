@@ -32,11 +32,11 @@ public class AppointmentEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_client", referencedColumnName = "id", nullable = false)
-    private UserEntity id_client;
+    private UserEntity client;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_creator", referencedColumnName = "id", nullable = false)
-    private UserEntity id_creator;
+    private UserEntity creator;
 
     @Column(nullable = false)
     @ColumnDefault("PLANIFIE")

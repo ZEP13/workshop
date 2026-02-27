@@ -1,30 +1,38 @@
-<changeSet id="001-create-users" author="CLBI">
-    <createTable tableName="users">
-        <column name="id" type="SERIAL">
-            <constraints primaryKey="true"/>
-        </column>
-        <column name="username" type="VARCHAR(255)">
-            <constraints nullable="false"/>
-        </column>
-        <column name="mail" type="TEXT">
-            <constraints nullable="false" unique="true"/>
-        </column>
-        <column name="phone" type="VARCHAR(20)">
-            <constraints nullable="false" unique="true"/>
-        </column>
-        <column name="firstname" type="VARCHAR(255)">
-            <constraints nullable="false"/>
-        </column>
-        <column name="lastname" type="VARCHAR(255)">
-            <constraints nullable="false"/>
-        </column>
-        <column name="password" type="VARCHAR(255)">
-            <constraints nullable="false"/>
-        </column>
-        <column name="role" type="VARCHAR(50)" defaultValue="CLIENT">
-            <constraints nullable="false"/>
-        </column>
-        <column name="created_at" type="TIMESTAMP"
-                defaultValueComputed="CURRENT_TIMESTAMP"/>
-    </createTable>
-</changeSet>
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.liquibase.org/xml/ns/dbchangelog
+           http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+	<changeSet id="001-create-users" author="CLBI">
+	    <createTable tableName="users">
+		<column name="id" type="SERIAL">
+		    <constraints primaryKey="true"/>
+		</column>
+		<column name="username" type="VARCHAR(255)">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="email" type="TEXT">
+		    <constraints nullable="false" unique="true"/>
+		</column>
+		<column name="phone" type="VARCHAR(20)">
+		    <constraints nullable="false" unique="true"/>
+		</column>
+		<column name="firstname" type="VARCHAR(255)">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="lastname" type="VARCHAR(255)">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="password" type="VARCHAR(255)">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="role" type="VARCHAR(50)" defaultValue="CLIENT">
+		    <constraints nullable="false"/>
+		</column>
+		<column name="created_at" type="TIMESTAMP"
+			defaultValueComputed="CURRENT_TIMESTAMP"/>
+	    </createTable>
+	</changeSet>
+</databaseChangeLog>

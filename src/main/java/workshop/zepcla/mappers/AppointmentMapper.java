@@ -16,27 +16,25 @@ public class AppointmentMapper {
         }
 
         UserDto clientDto = null;
-        if (appointment.getId_client() != null) {
+        if (appointment.getClient() != null) {
             clientDto = new UserDto(
-                    appointment.getId_client().getId(),
-                    appointment.getId_client().getEmail(),
-                    appointment.getId_client().getUsername(),
-                    appointment.getId_client().getFirstname(),
-                    appointment.getId_client().getLastname(),
-                    appointment.getId_client().getPhone()
-            );
+                    appointment.getClient().getId(),
+                    appointment.getClient().getEmail(),
+                    appointment.getClient().getUsername(),
+                    appointment.getClient().getFirstname(),
+                    appointment.getClient().getLastname(),
+                    appointment.getClient().getPhone());
         }
 
         UserDto creatorDto = null;
-        if (appointment.getId_creator() != null) {
+        if (appointment.getCreator() != null) {
             creatorDto = new UserDto(
-                    appointment.getId_creator().getId(),
-                    appointment.getId_creator().getEmail(),
-                    appointment.getId_creator().getUsername(),
-                    appointment.getId_creator().getFirstname(),
-                    appointment.getId_creator().getLastname(),
-                    appointment.getId_creator().getPhone()
-            );
+                    appointment.getCreator().getId(),
+                    appointment.getCreator().getEmail(),
+                    appointment.getCreator().getUsername(),
+                    appointment.getCreator().getFirstname(),
+                    appointment.getCreator().getLastname(),
+                    appointment.getCreator().getPhone());
         }
 
         return new AppointmentDto(
@@ -44,8 +42,7 @@ public class AppointmentMapper {
                 appointment.getTime(),
                 clientDto,
                 creatorDto,
-                appointment.getStatus()
-        );
+                appointment.getStatus());
     }
 
     public AppointmentEntity toEntityForCreation(AppointmentCreationDto dto) {
@@ -60,13 +57,13 @@ public class AppointmentMapper {
         if (dto.id_client() != null) {
             UserEntity client = new UserEntity();
             client.setId(dto.id_client().id());
-            entity.setId_client(client);
+            entity.setClient(client);
         }
 
         if (dto.id_creator() != null) {
             UserEntity creator = new UserEntity();
             creator.setId(dto.id_creator().id());
-            entity.setId_creator(creator);
+            entity.setCreator(creator);
         }
 
         return entity;
