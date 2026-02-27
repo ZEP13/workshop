@@ -1,5 +1,7 @@
 package workshop.zepcla.services;
 
+import java.util.List;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -50,6 +52,27 @@ public class UserService implements UserDetailsService {
         repo.save(newUser);
     }
 
+    public void updateUser(Long id, UserCreationDto userCreationDto) {
+        UserEntity existingUser = repo.findById(id)
+                .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + id));
+
+        if (!existingUser.getUsername().equals(userCreationDto.username()) &&
+                repo.existsByUsername(userCreationDto.username())) {
+            throw new UserAlreadyExistsException("Username already exists");
+        }
+
+        existingUser.setUsername(userCreationDto.username());
+        existingUser.setPassword(passwordEncoder.encode(userCreationDto.password()));
+        repo.save(existingUser);
+    }
+
+    public void deleteUserById(Long id) {
+        if (!repo.existsById(id)) {
+            throw new UserIdNotFoundException("User ID not found: " + id);
+        }
+        repo.deleteById(id);
+    }
+
     public UserDto getUserById(Long id) {
         UserEntity userEntity = repo.findById(id)
                 .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + id));
@@ -81,5 +104,12 @@ public class UserService implements UserDetailsService {
 
         return repo.findByUsername(username)
                 .orElseThrow(() -> new UserIdNotFoundException("User not found with name: " + username));
+    }
+
+    public List<UserDto> getAllUsers() {
+        List<UserEntity> userEntities = repo.findAll();
+        return userEntities.stream()
+                .map(userMapper::toDto)
+                .toList();
     }
 }
