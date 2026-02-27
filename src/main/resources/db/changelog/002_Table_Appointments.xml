@@ -16,10 +16,13 @@
 		<column name="time" type="TIME">
 		    <constraints nullable="false"/>
 		</column>
+		<column name="duration" type="INT">
+		    <constraints nullable="false"/>
+		</column>
 		<column name="id_client" type="INT">
 		    <constraints nullable="false"/>
 		</column>
-		<column name="id_creator" type="INT">
+		<column name="id_creator" type="INT" defaultValue="NULL">
 		    <constraints nullable="false"/>
 		</column>
 		<column name="status" type="VARCHAR(50)" defaultValue="PLANIFIE">

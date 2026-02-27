@@ -30,12 +30,17 @@ public class AppointmentEntity extends BaseEntity {
     @Column(nullable = false)
     private LocalTime time;
 
+    @Column(nullable = false)
+    // ajoute duratoin a tout les couche du projet
+    private Integer duration;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_client", referencedColumnName = "id", nullable = false)
     private UserEntity client;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_creator", referencedColumnName = "id", nullable = false)
+    @ColumnDefault("NULL")
     private UserEntity creator;
 
     @Column(nullable = false)

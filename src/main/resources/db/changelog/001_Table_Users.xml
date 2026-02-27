@@ -10,9 +10,6 @@
 		<column name="id" type="SERIAL">
 		    <constraints primaryKey="true"/>
 		</column>
-		<column name="username" type="VARCHAR(255)">
-		    <constraints nullable="false"/>
-		</column>
 		<column name="email" type="TEXT">
 		    <constraints nullable="false" unique="true"/>
 		</column>

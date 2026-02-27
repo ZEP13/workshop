@@ -121,3 +121,14 @@ L’application doit être :
     Justifiée techniquement
 
 L’évaluation portera autant sur la qualité de l’analyse du besoin que sur la qualité de l’implémentation.
+
+
+point que l'on ajoute:
+
+
+    2 foreign key dans la table rendez-vous : une pour le client et une pour le professionnels
+	-> si client reserve, son id va pour id client et  null dans creator
+	-> si professionnel réserve, son id va pour creator et l'id du client va pour client
+
+    
+
