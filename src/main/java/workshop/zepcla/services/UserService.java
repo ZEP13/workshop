@@ -14,6 +14,7 @@ import workshop.zepcla.dto.userDto.UserCreationDto;
 import workshop.zepcla.dto.userDto.UserDto;
 import workshop.zepcla.entities.UserEntity;
 import workshop.zepcla.exceptions.userException.UserAlreadyExistsException;
+import workshop.zepcla.exceptions.userException.UserEmailNotFoundException;
 import workshop.zepcla.exceptions.userException.UserIdNotFoundException;
 import workshop.zepcla.exceptions.userException.UsernameNotFoundException;
 import workshop.zepcla.mappers.UserMapper;
@@ -35,7 +36,7 @@ public class UserService implements UserDetailsService {
         String[] roles = userEntity.getRole().split(",");
 
         return User.builder()
-                .username(userEntity.getUsername())
+                .username(userEntity.getEmail())
                 .password(userEntity.getPassword())
                 .roles(roles)
                 .build();
@@ -43,7 +44,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void save(UserCreationDto userCreationDto) {
-        if (repo.existsByUsername(userCreationDto.username())) {
+        if (repo.existsByEmail(userCreationDto.email())) {
             throw new UserAlreadyExistsException("Username already exists");
         }
 
@@ -56,12 +57,12 @@ public class UserService implements UserDetailsService {
         UserEntity existingUser = repo.findById(id)
                 .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + id));
 
-        if (!existingUser.getUsername().equals(userCreationDto.username()) &&
-                repo.existsByUsername(userCreationDto.username())) {
-            throw new UserAlreadyExistsException("Username already exists");
+        if (!existingUser.getEmail().equals(userCreationDto.email()) &&
+                repo.existsByEmail(userCreationDto.email())) {
+            throw new UserAlreadyExistsException("Email already exists");
         }
 
-        existingUser.setUsername(userCreationDto.username());
+        existingUser.setEmail(userCreationDto.email());
         existingUser.setPassword(passwordEncoder.encode(userCreationDto.password()));
         repo.save(existingUser);
     }
@@ -100,10 +101,10 @@ public class UserService implements UserDetailsService {
             throw new UserIdNotFoundException("User not authenticated");
         }
 
-        String username = authentication.getName();
+        String email = authentication.getName();
 
-        return repo.findByUsername(username)
-                .orElseThrow(() -> new UserIdNotFoundException("User not found with name: " + username));
+        return repo.findByEmail(email)
+                .orElseThrow(() -> new UserEmailNotFoundException("User not found with email: " + email));
     }
 
     public List<UserDto> getAllUsers() {

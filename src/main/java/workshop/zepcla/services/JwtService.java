@@ -50,8 +50,8 @@ public class JwtService {
     }
 
     public String refreshToken(String refreshToken) {
-        String username = extractUsername(refreshToken);
-        UserDetails user = service.loadUserByUsername(username);
+        String email = extractUsername(refreshToken);
+        UserDetails user = service.loadUserByUsername(email);
 
         if (!isTokenValid(refreshToken, user)) {
             throw new IllegalArgumentException("Invalid refresh token");

@@ -20,9 +20,6 @@ import lombok.Setter;
 @Table(name = "users")
 public class UserEntity extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
-    private String username;
-
     private String firstname;
     private String lastname;
 

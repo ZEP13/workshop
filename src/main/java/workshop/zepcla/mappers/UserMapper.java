@@ -16,10 +16,10 @@ public class UserMapper {
         return new UserDto(
                 user.getId(),
                 user.getEmail(),
-                user.getUsername(),
                 user.getFirstname(),
                 user.getLastname(),
-                user.getPhone());
+                user.getPhone(),
+                user.getRole());
     }
 
     public UserEntity toEntity(UserDto userDto) {
@@ -29,10 +29,10 @@ public class UserMapper {
         UserEntity entity = new UserEntity();
         entity.setId(userDto.id());
         entity.setEmail(userDto.email());
-        entity.setUsername(userDto.username());
         entity.setFirstname(userDto.firstName());
         entity.setLastname(userDto.lastName());
         entity.setPhone(userDto.phoneNumber());
+        entity.setRole(userDto.role());
 
         return entity;
     }
@@ -43,7 +43,6 @@ public class UserMapper {
         }
         UserEntity entity = new UserEntity();
         entity.setEmail(userDto.email());
-        entity.setUsername(userDto.username());
         entity.setFirstname(userDto.firstName());
         entity.setLastname(userDto.lastName());
         entity.setPassword(userDto.password());
@@ -57,7 +56,7 @@ public class UserMapper {
             return null;
         }
         UserEntity entity = new UserEntity();
-        entity.setEmail(userDto.getUsername());
+        entity.setEmail(userDto.getEmail());
         entity.setPassword(userDto.getPassword());
         return entity;
     }
