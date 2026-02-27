@@ -29,9 +29,9 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) {
-        UserEntity userEntity = repo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+    public UserDetails loadUserByUsername(String email) {
+        UserEntity userEntity = repo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
 
         String[] roles = userEntity.getRole().split(",");
 
@@ -87,10 +87,10 @@ public class UserService implements UserDetailsService {
             throw new UserIdNotFoundException("User not authenticated");
         }
 
-        String username = authentication.getName();
+        String email = authentication.getName();
 
-        return repo.findByUsername(username)
-                .orElseThrow(() -> new UserIdNotFoundException("User not found with username: " + username))
+        return repo.findByEmail(email)
+                .orElseThrow(() -> new UserIdNotFoundException("User not found with username: " + email))
                 .getId();
     }
 
