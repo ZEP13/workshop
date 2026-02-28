@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.userDto.UserCreationDto;
 import workshop.zepcla.dto.userDto.UserLoginDto;
@@ -28,7 +29,7 @@ public class AuthentificationController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public void register(@RequestBody UserCreationDto userDTO) {
+    public void register(@Valid @RequestBody UserCreationDto userDTO) {
         userService.save(userDTO);
     }
 
