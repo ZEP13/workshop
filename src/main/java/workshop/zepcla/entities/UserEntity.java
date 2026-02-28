@@ -40,7 +40,7 @@ public class UserEntity extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     @NotBlank(message = "Phone number is required")
-    @ValidPhone
+    @ValidPhone(countries = { "BE", "FR" })
     private String phone;
 
     @Column(nullable = false)
