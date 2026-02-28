@@ -2,7 +2,10 @@ package workshop.zepcla.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import workshop.zepcla.dto.appointmentDto.AppointmentCreationByAdminDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentCreationDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentDto;
 import workshop.zepcla.services.AppointmentService;
@@ -66,5 +69,12 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentDto>> getAppointmentsByCreator(@PathVariable Long id_creator) {
         List<AppointmentDto> list = appointmentService.getAppointmentsByCreator(id_creator);
         return ResponseEntity.ok(list);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin-create")
+    public ResponseEntity<AppointmentDto> createAppointmentByAdmin(@RequestBody AppointmentCreationByAdminDto dto) {
+        AppointmentDto created = appointmentService.createAppointmentAsAdmin(dto);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 }

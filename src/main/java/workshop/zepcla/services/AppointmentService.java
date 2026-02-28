@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+import workshop.zepcla.dto.appointmentDto.AppointmentCreationByAdminDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentCreationDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentPublicCreationDto;
@@ -86,6 +87,37 @@ public class AppointmentService {
         // Mapper le DTO vers l'entité et sauvegarder
         AppointmentEntity entity = appointmentMapper.toEntityForCreation(dto);
         entity.setClient(clientEntity);
+
+        AppointmentEntity saved = appointmentRepository.save(entity);
+        return appointmentMapper.toDto(saved);
+    }
+
+    public AppointmentDto createAppointmentAsAdmin(AppointmentCreationByAdminDto dto) {
+
+        LocalDate date = dto.date_appointment();
+        LocalTime time = dto.time_appointment();
+
+        if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
+            throw new ClientCantHaveAppointmentInPast(
+                    "on " + date + " at " + time + ". Please select a valid date");
+        }
+
+        UserEntity creatorEntity = userService.getCurrentUserEntity();
+
+        boolean clientConflict = appointmentRepository.existsByClientAndDateAndTime(creatorEntity, date, time);
+        if (clientConflict) {
+            throw new ClientAlreadyHaveAppointment("on " + date + " at " + time);
+        }
+
+        boolean slotTaken = appointmentRepository.existsByDateAndTime(date, time);
+        if (slotTaken) {
+            throw new NoAvaibleAppointment("on " + date + " at " + time);
+        }
+
+        AppointmentEntity entity = appointmentMapper.toEntityForCreationByAdmin(dto);
+        entity.setCreator(creatorEntity);
+        entity.setClient(dto.id_client() != null ? userRepository.findById(dto.id_client().id())
+                .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + dto.id_client())) : null);
 
         AppointmentEntity saved = appointmentRepository.save(entity);
         return appointmentMapper.toDto(saved);

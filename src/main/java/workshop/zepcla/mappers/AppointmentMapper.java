@@ -1,6 +1,8 @@
 package workshop.zepcla.mappers;
 
 import org.springframework.stereotype.Component;
+
+import workshop.zepcla.dto.appointmentDto.AppointmentCreationByAdminDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentCreationDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentDto;
 import workshop.zepcla.dto.appointmentDto.AppointmentPublicCreationDto;
@@ -47,7 +49,7 @@ public class AppointmentMapper {
                 appointment.getStatus());
     }
 
-    public AppointmentEntity toEntityForCreation(AppointmentCreationDto dto) {
+    public AppointmentEntity toEntityForCreationByAdmin(AppointmentCreationByAdminDto dto) {
         if (dto == null) {
             return null;
         }
@@ -66,11 +68,21 @@ public class AppointmentMapper {
             entity.setClient(client);
         }
 
-        if (dto.id_creator() != null) {
-            UserEntity creator = new UserEntity();
-            creator.setId(dto.id_creator().id());
-            entity.setCreator(creator);
+        return entity;
+    }
+
+    public AppointmentEntity toEntityForCreation(AppointmentCreationDto dto) {
+        if (dto == null) {
+            return null;
         }
+
+        AppointmentEntity entity = new AppointmentEntity();
+        entity.setDate(dto.date_appointment());
+        entity.setTime(dto.time_appointment());
+
+        entity.setDuration(dto.duration());
+
+        entity.setStatus("PLANIFIED");
 
         return entity;
     }
