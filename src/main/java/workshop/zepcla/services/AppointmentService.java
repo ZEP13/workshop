@@ -36,7 +36,6 @@ public class AppointmentService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    // Créer un RDV sans compte
     public void createAppointmentWithoutAccount(AppointmentPublicCreationDto dto) {
         AppointmentEntity appointment = appointmentMapper.toEntityForPublicCreation(dto);
         appointment.setToken(UUID.randomUUID().toString());
@@ -47,14 +46,27 @@ public class AppointmentService {
     public AppointmentPublicCreationDto getAppointmentByToken(String token) {
         AppointmentEntity ap = appointmentRepository.findByToken(token)
                 .orElseThrow(() -> new AppointmentNotFound(" with token " + token));
+        if (ap.getDate().isBefore(LocalDate.now())
+                || (ap.getDate().isEqual(LocalDate.now()) && ap.getTime().isBefore(LocalTime.now()))) {
+            throw new AppointmentNotFound(" with token " + token + " because it is in the past");
+        }
         return appointmentMapper.toPublicCreationDto(ap);
     }
 
     public AppointmentPublicCreationDto cancelAppointmentByToken(String token) {
         AppointmentEntity appointment = appointmentRepository.findByToken(token)
                 .orElseThrow(() -> new AppointmentNotFound(" with token " + token));
+
+        LocalDateTime appointmentDateTime = LocalDateTime.of(appointment.getDate(), appointment.getTime());
+
+        if (appointmentDateTime.minusHours(12).isBefore(LocalDateTime.now())) {
+            throw new AppointmentNotFound(
+                    "You can't cancel an appointment less than 12 hours before the appointment date");
+        }
+
         appointment.setStatus("CANCELLED");
         appointmentRepository.save(appointment);
+
         return appointmentMapper.toPublicCreationDto(appointment);
     }
 
@@ -63,28 +75,23 @@ public class AppointmentService {
         LocalDate date = dto.date_appointment();
         LocalTime time = dto.time_appointment();
 
-        // Vérifier que la date/heure n'est pas dans le passé
         if (LocalDateTime.of(date, time).isBefore(LocalDateTime.now())) {
             throw new ClientCantHaveAppointmentInPast(
                     "on " + date + " at " + time + ". Please select a valid date");
         }
 
-        // Récupérer l'utilisateur connecté
-        UserEntity clientEntity = userService.getCurrentUserEntity(); // méthode existante dans UserService
+        UserEntity clientEntity = userService.getCurrentUserEntity();
 
-        // Vérifier si le client a déjà un rendez-vous à cette date/heure
         boolean clientConflict = appointmentRepository.existsByClientAndDateAndTime(clientEntity, date, time);
         if (clientConflict) {
             throw new ClientAlreadyHaveAppointment("on " + date + " at " + time);
         }
 
-        // Vérifier si le créneau est déjà pris
         boolean slotTaken = appointmentRepository.existsByDateAndTime(date, time);
         if (slotTaken) {
             throw new NoAvaibleAppointment("on " + date + " at " + time);
         }
 
-        // Mapper le DTO vers l'entité et sauvegarder
         AppointmentEntity entity = appointmentMapper.toEntityForCreation(dto);
         entity.setClient(clientEntity);
 
@@ -127,6 +134,12 @@ public class AppointmentService {
         AppointmentEntity appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppointmentNotFound(" with id " + id));
 
+        LocalDateTime appointmentDateTime = LocalDateTime.of(appointment.getDate(), appointment.getTime());
+
+        if (appointmentDateTime.minusHours(12).isBefore(LocalDateTime.now())) {
+            throw new AppointmentNotFound(
+                    "You can't cancel an appointment less than 12 hours before the appointment date");
+        }
         appointment.setStatus("CANCELLED");
         return appointmentMapper.toDto(appointmentRepository.save(appointment));
     }
