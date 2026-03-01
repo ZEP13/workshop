@@ -29,6 +29,6 @@ public class UserSpecification {
 
     public static Specification<UserEntity> hasPhoneNumber(String phoneNumber) {
         return ((root, query, criteriaBuilder) -> phoneNumber == null ? null
-                : criteriaBuilder.like(root.get("phoneNumber"), phoneNumber));
+                : criteriaBuilder.like(root.get("phone"), phoneNumber));
     }
 }

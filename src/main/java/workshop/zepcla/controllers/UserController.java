@@ -1,10 +1,10 @@
 package workshop.zepcla.controllers;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,4 +78,22 @@ public class UserController {
     public Iterable<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
+
+
+   @GetMapping("/superSearch")
+   @PreAuthorize("hasRole('ADMIN', 'CLIENT')")
+
+    public Page<UserDto> superSearch(
+	@RequestParam(defaultValue = "0") int page,
+	@RequestParam(defaultValue = "10") int size,
+	@RequestParam(required = false) Long id,
+	@RequestParam(required = false) String firstName,
+	@RequestParam(required = false) String lastName,
+	@RequestParam(required = false) String email,
+	@RequestParam(required = false) String role,
+	@RequestParam(required = false) String phoneNumber
+    ){
+	return userService.superSearch(page, size, id, firstName, lastName, email, role, phoneNumber);
+    }
+
 }

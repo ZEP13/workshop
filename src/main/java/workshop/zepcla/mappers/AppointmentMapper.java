@@ -23,8 +23,8 @@ public class AppointmentMapper {
             clientDto = new UserDto(
                     appointment.getClient().getId(),
                     appointment.getClient().getEmail(),
-                    appointment.getClient().getFirstname(),
-                    appointment.getClient().getLastname(),
+                    appointment.getClient().getFirstName(),
+                    appointment.getClient().getLastName(),
                     appointment.getClient().getPhone(),
                     appointment.getClient().getRole());
         }
@@ -34,8 +34,8 @@ public class AppointmentMapper {
             creatorDto = new UserDto(
                     appointment.getCreator().getId(),
                     appointment.getCreator().getEmail(),
-                    appointment.getCreator().getFirstname(),
-                    appointment.getCreator().getLastname(),
+                    appointment.getCreator().getFirstName(),
+                    appointment.getCreator().getLastName(),
                     appointment.getCreator().getPhone(),
                     appointment.getCreator().getRole());
         }

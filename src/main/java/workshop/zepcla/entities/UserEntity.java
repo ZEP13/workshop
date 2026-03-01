@@ -27,11 +27,11 @@ public class UserEntity extends BaseEntity {
 
     @Column(nullable = false)
     @NotBlank(message = "First name is required")
-    private String firstname;
+    private String firstName;
 
     @Column(nullable = false)
     @NotBlank(message = "Last name is required")
-    private String lastname;
+    private String lastName;
 
     @Email(message = "Email should be valid", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     @Column(nullable = false, unique = true)
