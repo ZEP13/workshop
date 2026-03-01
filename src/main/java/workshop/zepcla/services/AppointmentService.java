@@ -23,12 +23,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 // add update logic
 // add super finder lis find?clientId=1&date=2024-06-30&time=14:00
-// add creator update cancel and create logic
+// add creator update cancel logic
 
 @Service
 @AllArgsConstructor
@@ -39,40 +38,6 @@ public class AppointmentService {
     private final AppointmentMapper appointmentMapper;
     private final UserRepository userRepository;
     private final UserService userService;
-
-    public void createAppointmentWithoutAccount(AppointmentPublicCreationDto dto) {
-        AppointmentEntity appointment = appointmentMapper.toEntityForPublicCreation(dto);
-        appointment.setToken(UUID.randomUUID().toString());
-        appointment.setStatus("PLANIFIED");
-        appointmentRepository.save(appointment);
-    }
-
-    public AppointmentPublicCreationDto getAppointmentByToken(String token) {
-        AppointmentEntity ap = appointmentRepository.findByToken(token)
-                .orElseThrow(() -> new AppointmentNotFound(" with token " + token));
-        if (ap.getDate().isBefore(LocalDate.now())
-                || (ap.getDate().isEqual(LocalDate.now()) && ap.getTime().isBefore(LocalTime.now()))) {
-            throw new AppointmentNotFound(" with token " + token + " because it is in the past");
-        }
-        return appointmentMapper.toPublicCreationDto(ap);
-    }
-
-    public AppointmentPublicCreationDto cancelAppointmentByToken(String token) {
-        AppointmentEntity appointment = appointmentRepository.findByToken(token)
-                .orElseThrow(() -> new AppointmentNotFound(" with token " + token));
-
-        LocalDateTime appointmentDateTime = LocalDateTime.of(appointment.getDate(), appointment.getTime());
-
-        if (appointmentDateTime.minusHours(12).isBefore(LocalDateTime.now())) {
-            throw new AppointmentNotFound(
-                    "You can't cancel an appointment less than 12 hours before the appointment date");
-        }
-
-        appointment.setStatus("CANCELLED");
-        appointmentRepository.save(appointment);
-
-        return appointmentMapper.toPublicCreationDto(appointment);
-    }
 
     public AppointmentDto createAppointment(AppointmentCreationDto dto) {
 

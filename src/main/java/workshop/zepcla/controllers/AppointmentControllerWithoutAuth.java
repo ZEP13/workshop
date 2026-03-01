@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.appointmentDto.AppointmentPublicCreationDto;
-import workshop.zepcla.services.AppointmentService;
+import workshop.zepcla.services.AppointmentServicePublic;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class AppointmentControllerWithoutAuth {
 
-    private final AppointmentService appointmentService;
+    private final AppointmentServicePublic appointmentService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createRdvWithoutAccount(@RequestBody AppointmentPublicCreationDto dto) {
