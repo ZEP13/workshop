@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.appointmentDto.AppointmentPublicCreationDto;
 import workshop.zepcla.entities.AppointmentEntity;
 import workshop.zepcla.exceptions.appointmentException.AppointmentNotFound;
+import workshop.zepcla.exceptions.appointmentException.NoCancelationAllowed;
 import workshop.zepcla.mappers.AppointmentMapper;
 import workshop.zepcla.repositories.AppointmentRepository;
 
@@ -45,7 +46,7 @@ public class AppointmentServicePublic {
         LocalDateTime appointmentDateTime = LocalDateTime.of(appointment.getDate(), appointment.getTime());
 
         if (appointmentDateTime.minusHours(12).isBefore(LocalDateTime.now())) {
-            throw new AppointmentNotFound(
+            throw new NoCancelationAllowed(
                     "You can't cancel an appointment less than 12 hours before the appointment date");
         }
 

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteCurrentUser")
-	@PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
+    @PreAuthorize("hasAnyRole('CLIENT','','ADMIN')")
     public void deleteCurrentUser() {
 		userService.deleteCurrentUser();
 	}
@@ -59,6 +60,18 @@ public class UserController {
     public UserDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
+
+    @GetMapping("/getUserByEmail")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public UserDto getUserByEmail(@RequestParam String email) {
+		return userService.getUserByEmail(email);
+    }
+
+    @GetMapping("/getuserByFirstAndLastName")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public UserDto getUserByFirstAndLastName(@RequestParam String firstName, @RequestParam String lastName) {
+	return userService.getUserByFirstAndLastName(firstName, lastName);
+    } 
 
     @GetMapping("/getAll")
     @PreAuthorize("hasRole('ADMIN')")

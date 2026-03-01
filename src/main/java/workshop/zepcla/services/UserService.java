@@ -2,6 +2,10 @@ package workshop.zepcla.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +25,8 @@ import workshop.zepcla.exceptions.userException.UsernameNotFoundException;
 import workshop.zepcla.mappers.UserMapper;
 import workshop.zepcla.repositories.AppointmentRepository;
 import workshop.zepcla.repositories.UserRepository;
+
+import static workshop.zepcla.specifications.UserSpecification.*;
 
 @AllArgsConstructor
 @Service
@@ -132,10 +138,45 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UserEmailNotFoundException("User not found with email: " + email));
     }
 
+    public UserDto getUserByEmail(String email) {
+        UserEntity userEntity = repo.findByEmail(email)
+                .orElseThrow(() -> new UserEmailNotFoundException("User not found with email: " + email));
+        return userMapper.toDto(userEntity);
+    }
+
+    public UserDto getUserByFirstAndLastName(String firstName, String lastName) {
+        UserEntity userEntity = repo.findByFirstNameAndLastName(firstName, lastName)
+                .orElseThrow(() -> new UserIdNotFoundException(
+                        "User not found with first name: " + firstName + " and last name: " + lastName));
+        return userMapper.toDto(userEntity);
+    }
+
     public List<UserDto> getAllUsers() {
         List<UserEntity> userEntities = repo.findAll();
         return userEntities.stream()
                 .map(userMapper::toDto)
                 .toList();
+    }
+
+    public Page<UserDto> superSearch(
+            Integer page,
+            Integer size,
+            Long id,
+            String firstName,
+            String lastName,
+            String email,
+            String role,
+            String phoneNumber) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Specification<UserEntity> spec = Specification
+                .where(hasLastName(lastName))
+                .and(hasFirstName(firstName))
+                .and(hasEmail(email))
+                .and(hasRole(role))
+                .and(hasPhoneNumber(phoneNumber));
+
+        return repo.findAll(spec, pageable)
+                .map(userMapper::toDto);
     }
 }
