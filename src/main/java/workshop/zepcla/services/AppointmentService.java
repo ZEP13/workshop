@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+// add update logic
+// add super finder lis find?clientId=1&date=2024-06-30&time=14:00
+// add creator update cancel and create logic
+
 @Service
 @AllArgsConstructor
 @Transactional
@@ -159,6 +163,14 @@ public class AppointmentService {
 
     public List<AppointmentDto> getAppointmentsByDate(LocalDate date) {
         return appointmentRepository.findByDate(date)
+                .stream()
+                .map(appointmentMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<AppointmentDto> getMyAppointmentsByDate(LocalDate date) {
+        UserEntity clientEntity = userService.getCurrentUserEntity();
+        return appointmentRepository.findByClientAndDate(clientEntity, date)
                 .stream()
                 .map(appointmentMapper::toDto)
                 .collect(Collectors.toList());

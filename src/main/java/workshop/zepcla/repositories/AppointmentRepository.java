@@ -20,6 +20,8 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
 
     List<AppointmentEntity> findByDate(LocalDate date);
 
+    List<AppointmentEntity> findByClientAndDate(UserEntity user, LocalDate date);
+
     List<AppointmentEntity> findByCreator(UserEntity creator);
 
     Optional<AppointmentEntity> findByToken(String token);

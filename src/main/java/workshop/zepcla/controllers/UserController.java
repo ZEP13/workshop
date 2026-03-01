@@ -22,23 +22,30 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/update")
+    @PutMapping("/updateCurrentUser")
     @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
-    public void login(@RequestBody UserDto request) {
+    public void updateCurrentUser(@RequestBody UserCreationDto request) {
+	userService.updateCurrentUser(request);
+    }
 
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public void update(@RequestBody UserCreationDto request, @PathVariable Long id) {
+	userService.updateUser(id, request);
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         userService.deleteUserById(id);
     }
 
-    @PutMapping("/update/{id}")
-    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
-    public void update(@RequestBody UserCreationDto request, @PathVariable Long id) {
-        userService.updateUser(id, request);
-    }
+    @DeleteMapping("/deleteCurrentUser")
+	@PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
+    public void deleteCurrentUser() {
+		userService.deleteCurrentUser();
+	}
+
 
     @GetMapping("/current")
     @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")

@@ -30,7 +30,7 @@ public class AppointmentControllerWithoutAuth {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PostMapping("/cancel")
+    @PutMapping("/cancel")
     public ResponseEntity<?> cancelRdv(@RequestParam String token) {
         var responseDto = appointmentService.cancelAppointmentByToken(token);
         return ResponseEntity.ok(Map.of(

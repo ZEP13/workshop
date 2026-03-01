@@ -23,19 +23,21 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<AppointmentDto> createAppointment(@RequestBody AppointmentCreationDto dto) {
         AppointmentDto created = appointmentService.createAppointment(dto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/cancel/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     public ResponseEntity<AppointmentDto> cancelAppointment(@PathVariable Long id) {
         AppointmentDto cancelled = appointmentService.cancelAppointment(id);
         return ResponseEntity.ok(cancelled);
     }
 
-    @GetMapping
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<List<AppointmentDto>> getAllAppointments() {
         List<AppointmentDto> list = appointmentService.getAllAppointments();
         return ResponseEntity.ok(list);
@@ -48,23 +50,35 @@ public class AppointmentController {
     }
 
     @GetMapping("/by-date")
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     public ResponseEntity<List<AppointmentDto>> getAppointmentsByDate(@RequestParam LocalDate date) {
         List<AppointmentDto> list = appointmentService.getAppointmentsByDate(date);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/my-appointments")
+    @PreAuthorize("hasAnyRole('CLIENT')")
     public ResponseEntity<List<AppointmentDto>> getMyAppointments() {
         List<AppointmentDto> list = appointmentService.getAppointmentsByCurrentClient();
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("/my-appointments/by-date")
+    @PreAuthorize("hasAnyRole('CLIENT')")
+    public ResponseEntity<List<AppointmentDto>> getMyAppointmentsByDate(@RequestParam LocalDate date) {
+        List<AppointmentDto> list = appointmentService.getMyAppointmentsByDate(date);
+        return ResponseEntity.ok(list);
+
+    }
+
     @GetMapping("/by-client/{id_client}")
+    @PreAuthorize("hasAnyRole('ADMIN)")
     public ResponseEntity<List<AppointmentDto>> getAppointmentsByClient(@PathVariable Long id_client) {
         List<AppointmentDto> list = appointmentService.getAppointmentsByClient(id_client);
         return ResponseEntity.ok(list);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN)")
     @GetMapping("/by-creator/{id_creator}")
     public ResponseEntity<List<AppointmentDto>> getAppointmentsByCreator(@PathVariable Long id_creator) {
         List<AppointmentDto> list = appointmentService.getAppointmentsByCreator(id_creator);

@@ -82,6 +82,11 @@ public class UserService implements UserDetailsService {
         repo.save(existingUser);
     }
 
+    public void updateCurrentUser(UserCreationDto userCreationDto) {
+        Long currentUserId = getCurrentUserId();
+        updateUser(currentUserId, userCreationDto);
+    }
+
     public void deleteUserById(Long id) {
         if (!repo.existsById(id)) {
             throw new UserIdNotFoundException("User ID not found: " + id);
@@ -93,6 +98,11 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = repo.findById(id)
                 .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + id));
         return userMapper.toDto(userEntity);
+    }
+
+    public void deleteCurrentUser() {
+        Long currentUserId = getCurrentUserId();
+        deleteUserById(currentUserId);
     }
 
     public Long getCurrentUserId() {
