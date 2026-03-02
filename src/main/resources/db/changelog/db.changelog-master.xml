@@ -12,6 +12,8 @@
 
     <include file="/db/changelog/003_Table_Enterprise.xml"/>
 
+    <include file="db/changelog/004_Table_Holiday.xml"/>
+
     <include file="db/changelog/005_Table_Break.xml"/>
 
 </databaseChangeLog>
