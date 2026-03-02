@@ -10,6 +10,9 @@ import workshop.zepcla.dto.enterpriseDto.EnterpriseCreationDto;
 import workshop.zepcla.dto.enterpriseDto.EnterpriseDto;
 import workshop.zepcla.dto.holidayDto.HolidayDto;
 import workshop.zepcla.entities.EnterpriseEntity;
+import workshop.zepcla.exceptions.enterpriseException.EnterpriseAlreadyExistsException;
+import workshop.zepcla.exceptions.enterpriseException.EnterpriseNotFound;
+import workshop.zepcla.exceptions.enterpriseException.InvalidEnterpriseScheduleException;
 import workshop.zepcla.mappers.BreakMapper;
 import workshop.zepcla.mappers.EnterpriseMapper;
 import workshop.zepcla.mappers.HolidayMapper;
@@ -26,23 +29,47 @@ public class EnterpriseService {
     private final BreakService breakService;
     private final HolidayService holidayService;
 
-    public void createEnterprise(EnterpriseCreationDto dto) {
+    public EnterpriseEntity createEnterprise(EnterpriseCreationDto dto) {
+
+        if (repo.existsByName(dto.name())) {
+            throw new EnterpriseAlreadyExistsException(
+                    "with name " + dto.name());
+        }
+
+        if (!dto.openingTime().isBefore(dto.closingTime())) {
+            throw new InvalidEnterpriseScheduleException(
+                    "Opening time must be before closing time");
+        }
+
         EnterpriseEntity entity = mapper.toCreationEntity(dto);
-        repo.save(entity);
+
+        return repo.save(entity);
     }
 
     public void deleteEnterprise(Long id) {
-        repo.deleteById(id);
+        EnterpriseEntity entity = repo.findById(id)
+                .orElseThrow(() -> new EnterpriseNotFound("with id " + id));
+        repo.delete(entity);
     }
 
-    public void updateEnterprise(Long id, EnterpriseCreationDto dto) {
-        EnterpriseEntity entity = mapper.toCreationEntity(dto);
-        entity.setId(id);
-        repo.save(entity);
+    public EnterpriseEntity updateEnterprise(Long id, EnterpriseCreationDto dto) {
+        EnterpriseEntity existing = repo.findById(id)
+                .orElseThrow(() -> new EnterpriseNotFound("with id " + id));
+
+        if (!dto.openingTime().isBefore(dto.closingTime())) {
+            throw new InvalidEnterpriseScheduleException("Opening time must be before closing time");
+        }
+
+        existing.setName(dto.name());
+        existing.setOpeningTime(dto.openingTime());
+        existing.setClosingTime(dto.closingTime());
+        existing.setDaysOff(dto.daysOff());
+
+        return repo.save(existing);
     }
 
     public EnterpriseEntity getEnterpriseById(Long id) {
-        return repo.findById(id).orElseThrow(() -> new RuntimeException("Enterprise not found"));
+        return repo.findById(id).orElseThrow(() -> new EnterpriseNotFound("with id " + id));
     }
 
     public Iterable<EnterpriseEntity> getAllEnterprises() {
