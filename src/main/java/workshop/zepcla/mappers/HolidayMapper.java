@@ -1,5 +1,6 @@
 package workshop.zepcla.mappers;
 
+import workshop.zepcla.dto.holidayDto.HolidayCreationDto;
 import workshop.zepcla.dto.holidayDto.HolidayDto;
 import workshop.zepcla.entities.HolidayEntity;
 
@@ -28,5 +29,17 @@ public class HolidayMapper {
                 entity.getStartDate(),
                 entity.getEndDate(),
                 entity.getDescription());
+    }
+
+    public HolidayEntity toCreationEntity(HolidayCreationDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        HolidayEntity holiday = new HolidayEntity();
+        holiday.setName(dto.name());
+        holiday.setStartDate(dto.startDate());
+        holiday.setEndDate(dto.endDate());
+        holiday.setDescription(dto.description());
+        return holiday;
     }
 }

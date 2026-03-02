@@ -1,5 +1,6 @@
 package workshop.zepcla.mappers;
 
+import workshop.zepcla.dto.enterpriseDto.EnterpriseCreationDto;
 import workshop.zepcla.dto.enterpriseDto.EnterpriseDto;
 import workshop.zepcla.entities.EnterpriseEntity;
 
@@ -33,5 +34,19 @@ public class EnterpriseMapper {
                 enterpriseEntity.getDaysOff(),
                 enterpriseEntity.getHolidayId(),
                 enterpriseEntity.getBreakId());
+    }
+
+    public EnterpriseEntity toCreationEntity(EnterpriseCreationDto enterpriseCreationDto) {
+        if (enterpriseCreationDto == null) {
+            return null;
+        }
+
+        EnterpriseEntity enterpriseEntity = new EnterpriseEntity();
+        enterpriseEntity.setName(enterpriseCreationDto.name());
+        enterpriseEntity.setOpeningTime(enterpriseCreationDto.openingTime());
+        enterpriseEntity.setClosingTime(enterpriseCreationDto.closingTime());
+        enterpriseEntity.setDaysOff(enterpriseCreationDto.daysOff());
+
+        return enterpriseEntity;
     }
 }

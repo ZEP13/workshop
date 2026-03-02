@@ -1,5 +1,6 @@
 package workshop.zepcla.mappers;
 
+import workshop.zepcla.dto.breakDto.BreakCreationDto;
 import workshop.zepcla.dto.breakDto.BreakDto;
 import workshop.zepcla.entities.BreakEntity;
 
@@ -24,5 +25,15 @@ public class BreakMapper {
                 entity.getId(),
                 entity.getStartTime(),
                 entity.getEndTime());
+    }
+
+    public BreakEntity toCreationEntity(BreakCreationDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        BreakEntity timeBreak = new BreakEntity();
+        timeBreak.setStartTime(dto.startTime());
+        timeBreak.setEndTime(dto.endTime());
+        return timeBreak;
     }
 }
