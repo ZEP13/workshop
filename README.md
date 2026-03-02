@@ -1,10 +1,79 @@
 # Workshop Zepcla API
 
 ## Authentication
-All routes are prefixed with `/logged/` and require a valid JWT token in the `Authorization` header:
+All routes prefixed with `/logged/` require a valid JWT token in the `Authorization` header:
 ```
 Authorization: Bearer <token>
 ```
+Public routes (`/register`, `/login`, `/admin/create`) do not require a token.
+
+---
+
+## Auth — public routes
+
+| Method | Route | Role | Description |
+|--------|-------|------|-------------|
+| POST | `/register` | PUBLIC | Register a new client account |
+| POST | `/login` | PUBLIC | Login and get JWT token |
+| POST | `/admin/create` | ADMIN | Create a new admin account linked to an enterprise |
+
+### POST `/register`
+**Body:**
+```json
+{
+  "email": "client@mail.com",
+  "password": "password123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phone": "0479000000",
+  "tokenRdv": "optional-appointment-token"
+}
+```
+
+### POST `/admin/create`
+**Body:**
+```json
+{
+  "email": "admin@mail.com",
+  "password": "password123",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "phone": "0479000001",
+  "enterpriseId": 1
+}
+```
+**Rules:**
+- `enterpriseId` is required for admin creation
+- Admin will be automatically linked to the enterprise
+
+---
+
+## Users — `/logged/users`
+
+| Method | Route | Role | Description |
+|--------|-------|------|-------------|
+| GET | `/logged/users/all` | ADMIN | Get all users |
+| GET | `/logged/users/{id}` | ADMIN | Get user by ID |
+| GET | `/logged/users/search` | ADMIN | Search users with filters |
+| GET | `/logged/users/by-email` | ADMIN | Get user by email |
+| GET | `/logged/users/by-name` | ADMIN | Get user by first and last name |
+| PUT | `/logged/users/update/{id}` | ADMIN | Update a user |
+| PUT | `/logged/users/update/me` | CLIENT, ADMIN | Update current user |
+| DELETE | `/logged/users/delete/{id}` | ADMIN | Delete a user |
+| DELETE | `/logged/users/delete/me` | CLIENT, ADMIN | Delete current user |
+
+### GET `/logged/users/search`
+**Query params:**
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| page | Integer | No (default: 0) | Page number |
+| size | Integer | No (default: 10) | Page size |
+| id | Long | No | Filter by ID |
+| firstName | String | No | Filter by first name |
+| lastName | String | No | Filter by last name |
+| email | String | No | Filter by email |
+| role | String | No | Filter by role (CLIENT, ADMIN) |
+| phoneNumber | String | No | Filter by phone number |
 
 ---
 
@@ -36,13 +105,13 @@ Authorization: Bearer <token>
 ```
 
 ### POST `/logged/appointments/admin-create`
+The enterprise is automatically taken from the authenticated admin's linked enterprise.
 **Body:**
 ```json
 {
   "date_appointment": "2026-04-01",
   "time_appointment": "10:00:00",
   "duration": 60,
-  "enterprise": { "id": 1 },
   "id_client": { "id": 5 }
 }
 ```
@@ -158,6 +227,7 @@ Authorization: Bearer <token>
 - Appointment must start and end within opening hours
 - Cannot create duplicate appointment (same client, same date, same time)
 - Slot must be available (no other appointment at same date/time)
+- Admin's enterprise is automatically used — cannot create appointment for another enterprise
 
 ### Appointment cancellation
 - Must be cancelled at least **12 hours** before the appointment
@@ -165,10 +235,14 @@ Authorization: Bearer <token>
 - A CLIENT can only cancel their own appointments
 - An ADMIN can cancel any appointment
 
+### Admin creation
+- An admin must be linked to an existing enterprise at creation
+- An admin can only manage appointments for their own enterprise
+
 ### Error responses
 | HTTP Code | Situation |
 |-----------|-----------|
-| 400 | Invalid date/time, past date, invalid schedule |
+| 400 | Invalid date/time, past date, invalid schedule, missing enterpriseId for admin |
 | 403 | Unauthorized access to another user's appointment |
 | 404 | Resource not found |
 | 409 | Conflict (slot taken, already cancelled, overlap) |

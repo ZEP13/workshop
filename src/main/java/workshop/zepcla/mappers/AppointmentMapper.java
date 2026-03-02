@@ -112,7 +112,7 @@ public AppointmentDto toDto(AppointmentEntity appointment) {
     }
 
     EnterpriseDto enterpriseDto = null;
-    if (appointment.getEnterprise() != null) { // assuming this is EnterpriseEntity
+    if (appointment.getEnterprise() != null) {
         var enterprise = appointment.getEnterprise();
         enterpriseDto = new EnterpriseDto(
                 enterprise.getId(),

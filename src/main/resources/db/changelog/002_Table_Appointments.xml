@@ -5,7 +5,7 @@
         xsi:schemaLocation="
            http://www.liquibase.org/xml/ns/dbchangelog
            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
-    <changeSet id="002-create-appointment" author="toi">
+    <changeSet id="002-create-appointment" author="CLBI">
         <createTable tableName="appointment">
             <column name="id" type="SERIAL">
                 <constraints primaryKey="true"/>
@@ -42,14 +42,14 @@
             baseColumnNames="id_client"
             referencedTableName="users"
             referencedColumnNames="id"
-            constraintName="fk_users_client"
+            constraintName="fk_appointment_client"
             onDelete="CASCADE"/>
         <addForeignKeyConstraint
             baseTableName="appointment"
             baseColumnNames="id_creator"
             referencedTableName="users"
             referencedColumnNames="id"
-            constraintName="fk_users_creator"
+            constraintName="fk_appointment_creator"
             onDelete="CASCADE"/>
         <addForeignKeyConstraint
             baseTableName="appointment"

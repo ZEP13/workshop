@@ -22,12 +22,10 @@ public class HolidayService {
 
     private void validateHoliday(HolidayCreationDto dto) {
 
-        // 1. Date de début avant date de fin
         if (dto.startDate().isAfter(dto.endDate())) {
             throw new HolidayDateInvalidException("Start date must be before or equal to end date");
         }
 
-        // 2. Pas dans le passé
         if (dto.endDate().isBefore(LocalDate.now())) {
             throw new HolidayDateInvalidException("Holiday end date cannot be in the past");
         }

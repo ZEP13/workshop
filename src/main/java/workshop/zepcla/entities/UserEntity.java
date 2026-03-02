@@ -4,6 +4,9 @@ import org.hibernate.annotations.ColumnDefault;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -48,6 +51,10 @@ public class UserEntity extends BaseEntity {
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[!@#$%^&*]).*$", message = "Password must contain at least one digit and one special character")
     private String password;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "id_enterprise", referencedColumnName = "id")
+    private EnterpriseEntity enterprise;
 
     @Builder.Default
     @Column(nullable = false)

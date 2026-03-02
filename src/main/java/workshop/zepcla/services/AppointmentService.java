@@ -135,17 +135,15 @@ public class AppointmentService {
             throw new ClientCantHaveAppointmentInPast(
                     "on " + date + " at " + time + ". Please select a valid date");
         }
-
-        Long idEnterprise = dto.enterprise().id();
-        EnterpriseEntity enterprise = enterpriseService.getEnterpriseById(idEnterprise);
-
-        validateEnterpriseAvailability(enterprise, date, time, dto.duration());
-
         UserEntity creatorEntity = userService.getCurrentUserEntity();
         if (!creatorEntity.getRole().equals("ADMIN") && !creatorEntity.getRole().equals("ROLE_ADMIN")) {
             throw new UnauthorizedAppointmentAccessException(
                     "You are not allowed to create an appointment as admin");
         }
+
+        EnterpriseEntity enterprise = enterpriseService.getEnterpriseById(creatorEntity.getEnterprise().getId());
+
+        validateEnterpriseAvailability(enterprise, date, time, dto.duration());
 
         UserEntity clientEntity = null;
         if (dto.id_client() != null) {

@@ -17,13 +17,16 @@ import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.userDto.UserCreationDto;
 import workshop.zepcla.dto.userDto.UserDto;
 import workshop.zepcla.entities.AppointmentEntity;
+import workshop.zepcla.entities.EnterpriseEntity;
 import workshop.zepcla.entities.UserEntity;
+import workshop.zepcla.exceptions.enterpriseException.EnterpriseNotFound;
 import workshop.zepcla.exceptions.userException.UserAlreadyExistsException;
 import workshop.zepcla.exceptions.userException.UserEmailNotFoundException;
 import workshop.zepcla.exceptions.userException.UserIdNotFoundException;
 import workshop.zepcla.exceptions.userException.UsernameNotFoundException;
 import workshop.zepcla.mappers.UserMapper;
 import workshop.zepcla.repositories.AppointmentRepository;
+import workshop.zepcla.repositories.EnterpriseRepository;
 import workshop.zepcla.repositories.UserRepository;
 
 import static workshop.zepcla.specifications.UserSpecification.*;
@@ -36,6 +39,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository repo;
     private final PasswordEncoder passwordEncoder;
     private final AppointmentRepository appointmentRepository;
+    private final EnterpriseRepository enterpriseRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) {
@@ -59,6 +63,11 @@ public class UserService implements UserDetailsService {
 
         UserEntity newUser = userMapper.toEntityForCreation(userCreationDto);
         newUser.setPassword(passwordEncoder.encode(userCreationDto.password()));
+        if (userCreationDto.enterpriseId() != null) {
+            EnterpriseEntity enterprise = enterpriseRepository.findById(userCreationDto.enterpriseId())
+                    .orElseThrow(() -> new EnterpriseNotFound("with id " + userCreationDto.enterpriseId()));
+            newUser.setEnterprise(enterprise);
+        }
         repo.save(newUser);
 
         if (userCreationDto.tokenRdv() != null && !userCreationDto.tokenRdv().isEmpty()) {
@@ -69,6 +78,13 @@ public class UserService implements UserDetailsService {
                 appointmentRepository.save(appt);
             }
         }
+    }
+
+    public void saveAdmin(UserCreationDto dto) {
+        if (dto.enterpriseId() == null) {
+            throw new IllegalArgumentException("Enterprise is required for admin creation");
+        }
+        save(dto);
     }
 
     public void updateUser(Long id, UserCreationDto userCreationDto) {

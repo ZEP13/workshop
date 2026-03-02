@@ -23,8 +23,6 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    // ─── Create ───────────────────────────────────────────────────────────────
-
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<AppointmentDto> createAppointment(@RequestBody AppointmentCreationDto dto) {
@@ -39,16 +37,12 @@ public class AppointmentController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    // ─── Cancel ───────────────────────────────────────────────────────────────
-
     @PutMapping("/cancel/{id}")
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<AppointmentDto> cancelAppointment(@PathVariable Long id) {
         AppointmentDto cancelled = appointmentService.cancelAppointment(id);
         return ResponseEntity.ok(cancelled);
     }
-
-    // ─── Read (Admin) ─────────────────────────────────────────────────────────
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
@@ -100,8 +94,6 @@ public class AppointmentController {
                 token);
         return ResponseEntity.ok(result);
     }
-
-    // ─── Read (Client) ────────────────────────────────────────────────────────
 
     @GetMapping("/my-appointments")
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")

@@ -26,12 +26,10 @@ public class BreakService {
 
     private void validateBreak(BreakCreationDto dto, Long excludeId) {
 
-        // 1. Heure de début avant heure de fin
         if (!dto.startTime().isBefore(dto.endTime())) {
             throw new InvalidBreakTimeException("Start time must be before end time");
         }
 
-        // 2. La pause doit être dans les heures d'ouverture
         EnterpriseEntity enterprise = enterpriseRepository.findById(dto.enterpriseId())
                 .orElseThrow(() -> new EnterpriseNotFound("with id " + dto.enterpriseId()));
 
@@ -42,7 +40,6 @@ public class BreakService {
                             enterprise.getOpeningTime() + " - " + enterprise.getClosingTime());
         }
 
-        // 3. Pas de chevauchement avec d'autres breaks du même jour
         List<BreakEntity> existing = repo.findByEnterpriseId(dto.enterpriseId());
         for (BreakEntity b : existing) {
             if (excludeId != null && b.getId().equals(excludeId))
