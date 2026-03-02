@@ -31,12 +31,12 @@ public class EnterpriseEntity extends BaseEntity {
     @Column(name = "days_off", nullable = true)
     private DayOfWeek daysOff;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_holiday", referencedColumnName = "id", nullable = true)
-    private HolidayEntity holiday;
+    @Column(nullable = true)
+    @JoinColumn(name = "id_holiday", referencedColumnName = "id")
+    private HolidayEntity holidayId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_time_break", referencedColumnName = "id", nullable = true)
-    private BreakEntity timeBreak;
+    @Column(nullable = true)
+    @JoinColumn(name = "id_time_break", referencedColumnName = "id")
+    private BreakEntity timeBreakId;
 
 }
