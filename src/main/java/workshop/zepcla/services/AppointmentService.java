@@ -16,10 +16,12 @@ import workshop.zepcla.entities.BreakEntity;
 import workshop.zepcla.entities.EnterpriseEntity;
 import workshop.zepcla.entities.HolidayEntity;
 import workshop.zepcla.entities.UserEntity;
+import workshop.zepcla.exceptions.appointmentException.AppointmentAlreadyCancelledException;
 import workshop.zepcla.exceptions.appointmentException.AppointmentNotFound;
 import workshop.zepcla.exceptions.appointmentException.ClientAlreadyHaveAppointment;
 import workshop.zepcla.exceptions.appointmentException.ClientCantHaveAppointmentInPast;
 import workshop.zepcla.exceptions.appointmentException.NoAvaibleAppointment;
+import workshop.zepcla.exceptions.appointmentException.UnauthorizedAppointmentAccessException;
 import workshop.zepcla.exceptions.enterpriseException.EnterpriseClosedException;
 import workshop.zepcla.exceptions.userException.UserIdNotFoundException;
 import workshop.zepcla.mappers.AppointmentMapper;
@@ -84,10 +86,8 @@ public class AppointmentService {
         for (BreakEntity breakEntity : enterprise.getBreaks()) {
             if (breakEntity.getDaysOff() != null &&
                     breakEntity.getDaysOff() != date.getDayOfWeek()) {
-                continue; // cette pause ne s'applique pas ce jour-là
+                continue;
             }
-            // chevauchement : le RDV commence avant la fin de la pause
-            // ET se termine après le début de la pause
             boolean overlaps = time.isBefore(breakEntity.getEndTime()) &&
                     appointmentEnd.isAfter(breakEntity.getStartTime());
             if (overlaps) {
@@ -131,8 +131,7 @@ public class AppointmentService {
         entity.setClient(clientEntity);
         entity.setEnterprise(enterprise);
 
-        AppointmentEntity saved = appointmentRepository.save(entity);
-        return appointmentMapper.toDto(saved);
+        return appointmentMapper.toDto(appointmentRepository.save(entity));
     }
 
     public AppointmentDto createAppointmentAsAdmin(AppointmentCreationByAdminDto dto) {
@@ -152,9 +151,16 @@ public class AppointmentService {
 
         UserEntity creatorEntity = userService.getCurrentUserEntity();
 
-        boolean clientConflict = appointmentRepository.existsByClientAndDateAndTime(creatorEntity, date, time);
-        if (clientConflict) {
-            throw new ClientAlreadyHaveAppointment("on " + date + " at " + time);
+        // Récupère le client si fourni
+        UserEntity clientEntity = null;
+        if (dto.id_client() != null) {
+            clientEntity = userRepository.findById(dto.id_client().id())
+                    .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + dto.id_client()));
+
+            boolean clientConflict = appointmentRepository.existsByClientAndDateAndTime(clientEntity, date, time);
+            if (clientConflict) {
+                throw new ClientAlreadyHaveAppointment("on " + date + " at " + time);
+            }
         }
 
         boolean slotTaken = appointmentRepository.existsByDateAndTime(date, time);
@@ -165,11 +171,9 @@ public class AppointmentService {
         AppointmentEntity entity = appointmentMapper.toEntityForCreationByAdmin(dto);
         entity.setCreator(creatorEntity);
         entity.setEnterprise(enterprise);
-        entity.setClient(dto.id_client() != null ? userRepository.findById(dto.id_client().id())
-                .orElseThrow(() -> new UserIdNotFoundException("User ID not found: " + dto.id_client())) : null);
+        entity.setClient(clientEntity);
 
-        AppointmentEntity saved = appointmentRepository.save(entity);
-        return appointmentMapper.toDto(saved);
+        return appointmentMapper.toDto(appointmentRepository.save(entity));
     }
 
     // ─── Cancel ───────────────────────────────────────────────────────────────
@@ -178,12 +182,29 @@ public class AppointmentService {
         AppointmentEntity appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppointmentNotFound(" with id " + id));
 
-        LocalDateTime appointmentDateTime = LocalDateTime.of(appointment.getDate(), appointment.getTime());
+        // Vérification que le RDV n'est pas déjà annulé
+        if ("CANCELLED".equals(appointment.getStatus())) {
+            throw new AppointmentAlreadyCancelledException("Appointment with id " + id + " is already cancelled");
+        }
 
-        if (appointmentDateTime.minusHours(12).isBefore(LocalDateTime.now())) {
+        // Vérification que l'utilisateur courant est le client ou un admin
+        UserEntity currentUser = userService.getCurrentUserEntity();
+        boolean isAdmin = currentUser.getRole().equals("ROLE_ADMIN") || currentUser.getRole().equals("ADMIN");
+        boolean isOwner = appointment.getClient() != null &&
+                appointment.getClient().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isOwner) {
+            throw new UnauthorizedAppointmentAccessException(
+                    "You are not allowed to cancel this appointment");
+        }
+
+        // Correction : bloquer si moins de 12h avant le RDV
+        LocalDateTime appointmentDateTime = LocalDateTime.of(appointment.getDate(), appointment.getTime());
+        if (appointmentDateTime.isBefore(LocalDateTime.now().plusHours(12))) {
             throw new AppointmentNotFound(
                     "You can't cancel an appointment less than 12 hours before the appointment date");
         }
+
         appointment.setStatus("CANCELLED");
         return appointmentMapper.toDto(appointmentRepository.save(appointment));
     }
@@ -200,6 +221,18 @@ public class AppointmentService {
     public AppointmentDto getAppointmentById(Long id) {
         AppointmentEntity appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppointmentNotFound(" with id " + id));
+
+        // Vérification que l'utilisateur courant est le client ou un admin
+        UserEntity currentUser = userService.getCurrentUserEntity();
+        boolean isAdmin = currentUser.getRole().equals("ROLE_ADMIN") || currentUser.getRole().equals("ADMIN");
+        boolean isOwner = appointment.getClient() != null &&
+                appointment.getClient().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isOwner) {
+            throw new UnauthorizedAppointmentAccessException(
+                    "You are not allowed to view this appointment");
+        }
+
         return appointmentMapper.toDto(appointment);
     }
 
@@ -256,7 +289,8 @@ public class AppointmentService {
         Pageable pageable = PageRequest.of(page, size);
 
         Specification<AppointmentEntity> spec = Specification
-                .where(hasDate(date))
+                .where(hasId(id))
+                .and(hasDate(date))
                 .and(hasTime(time))
                 .and(hasDuration(duration))
                 .and(hasStatus(status))

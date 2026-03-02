@@ -1,5 +1,6 @@
 package workshop.zepcla.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -19,12 +20,22 @@ public class HolidayService {
     private final HolidayRepository repo;
     private final HolidayMapper mapper;
 
-    public HolidayEntity createHoliday(HolidayCreationDto dto) {
+    private void validateHoliday(HolidayCreationDto dto) {
+
+        // 1. Date de début avant date de fin
         if (dto.startDate().isAfter(dto.endDate())) {
-            throw new HolidayDateInvalidException("Start date must be before end date");
+            throw new HolidayDateInvalidException("Start date must be before or equal to end date");
         }
-        HolidayEntity entity = mapper.toCreationEntity(dto);
-        return repo.save(entity);
+
+        // 2. Pas dans le passé
+        if (dto.endDate().isBefore(LocalDate.now())) {
+            throw new HolidayDateInvalidException("Holiday end date cannot be in the past");
+        }
+    }
+
+    public HolidayEntity createHoliday(HolidayCreationDto dto) {
+        validateHoliday(dto);
+        return repo.save(mapper.toCreationEntity(dto));
     }
 
     public void deleteHoliday(Long id) {
@@ -35,7 +46,8 @@ public class HolidayService {
 
     public void updateHoliday(Long id, HolidayCreationDto dto) {
         HolidayEntity existing = repo.findById(id)
-                .orElseThrow(() -> new HolidayNotFound("Break not found with id " + id));
+                .orElseThrow(() -> new HolidayNotFound("with id " + id));
+        validateHoliday(dto);
         existing.setStartDate(dto.startDate());
         existing.setEndDate(dto.endDate());
         repo.save(existing);

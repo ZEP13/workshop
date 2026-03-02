@@ -1,9 +1,12 @@
 package workshop.zepcla.mappers;
 
+import org.springframework.stereotype.Component;
+
 import workshop.zepcla.dto.enterpriseDto.EnterpriseCreationDto;
 import workshop.zepcla.dto.enterpriseDto.EnterpriseDto;
 import workshop.zepcla.entities.EnterpriseEntity;
 
+@Component
 public class EnterpriseMapper {
 
     public EnterpriseEntity toEntity(EnterpriseDto enterpriseDto) {

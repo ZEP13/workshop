@@ -6,5 +6,6 @@ import java.time.LocalTime;
 public record BreakCreationDto(
         LocalTime startTime,
         LocalTime endTime,
-        Enum<DayOfWeek> dayOfWeek) {
+        DayOfWeek daysOff,
+        Long enterpriseId) {
 }
