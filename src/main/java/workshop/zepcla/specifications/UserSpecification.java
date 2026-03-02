@@ -6,6 +6,11 @@ import workshop.zepcla.entities.UserEntity;
 
 public class UserSpecification {
 
+    public static Specification<UserEntity> hasId(Long id) {
+        return ((root, query, criteriaBuilder) -> id == null ? null
+                : criteriaBuilder.equal(root.get("id"), id));
+    }
+
     public static Specification<UserEntity> hasLastName(String lastName) {
         return ((root, query, criteriaBuilder) -> lastName == null ? null
                 : criteriaBuilder.like(root.get("lastName"), lastName));

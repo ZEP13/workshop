@@ -47,15 +47,12 @@ public class AppointmentService {
     private final UserService userService;
     private final EnterpriseService enterpriseService;
 
-    // ─── Validation helpers ───────────────────────────────────────────────────
-
     private void validateEnterpriseAvailability(EnterpriseEntity enterprise,
             LocalDate date,
             LocalTime time,
             Integer duration) {
         LocalTime appointmentEnd = time.plusMinutes(duration);
 
-        // 1. Heures d'ouverture
         if (time.isBefore(enterprise.getOpeningTime()) ||
                 appointmentEnd.isAfter(enterprise.getClosingTime())) {
             throw new EnterpriseClosedException(
@@ -64,14 +61,12 @@ public class AppointmentService {
                             " - " + enterprise.getClosingTime());
         }
 
-        // 2. Jour de congé hebdomadaire
         if (enterprise.getDaysOff() != null &&
                 enterprise.getDaysOff() == date.getDayOfWeek()) {
             throw new EnterpriseClosedException(
                     "The enterprise is closed every " + enterprise.getDaysOff());
         }
 
-        // 3. Périodes de vacances
         for (HolidayEntity holiday : enterprise.getHolidays()) {
             if (!date.isBefore(holiday.getStartDate()) &&
                     !date.isAfter(holiday.getEndDate())) {
@@ -82,7 +77,6 @@ public class AppointmentService {
             }
         }
 
-        // 4. Pauses du jour
         for (BreakEntity breakEntity : enterprise.getBreaks()) {
             if (breakEntity.getDaysOff() != null &&
                     breakEntity.getDaysOff() != date.getDayOfWeek()) {
@@ -97,8 +91,6 @@ public class AppointmentService {
             }
         }
     }
-
-    // ─── Create ───────────────────────────────────────────────────────────────
 
     public AppointmentDto createAppointment(AppointmentCreationDto dto) {
 
@@ -150,8 +142,11 @@ public class AppointmentService {
         validateEnterpriseAvailability(enterprise, date, time, dto.duration());
 
         UserEntity creatorEntity = userService.getCurrentUserEntity();
+        if (!creatorEntity.getRole().equals("ADMIN") && !creatorEntity.getRole().equals("ROLE_ADMIN")) {
+            throw new UnauthorizedAppointmentAccessException(
+                    "You are not allowed to create an appointment as admin");
+        }
 
-        // Récupère le client si fourni
         UserEntity clientEntity = null;
         if (dto.id_client() != null) {
             clientEntity = userRepository.findById(dto.id_client().id())
@@ -176,18 +171,14 @@ public class AppointmentService {
         return appointmentMapper.toDto(appointmentRepository.save(entity));
     }
 
-    // ─── Cancel ───────────────────────────────────────────────────────────────
-
     public AppointmentDto cancelAppointment(Long id) {
         AppointmentEntity appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppointmentNotFound(" with id " + id));
 
-        // Vérification que le RDV n'est pas déjà annulé
         if ("CANCELLED".equals(appointment.getStatus())) {
             throw new AppointmentAlreadyCancelledException("Appointment with id " + id + " is already cancelled");
         }
 
-        // Vérification que l'utilisateur courant est le client ou un admin
         UserEntity currentUser = userService.getCurrentUserEntity();
         boolean isAdmin = currentUser.getRole().equals("ROLE_ADMIN") || currentUser.getRole().equals("ADMIN");
         boolean isOwner = appointment.getClient() != null &&
@@ -198,7 +189,6 @@ public class AppointmentService {
                     "You are not allowed to cancel this appointment");
         }
 
-        // Correction : bloquer si moins de 12h avant le RDV
         LocalDateTime appointmentDateTime = LocalDateTime.of(appointment.getDate(), appointment.getTime());
         if (appointmentDateTime.isBefore(LocalDateTime.now().plusHours(12))) {
             throw new AppointmentNotFound(
@@ -208,8 +198,6 @@ public class AppointmentService {
         appointment.setStatus("CANCELLED");
         return appointmentMapper.toDto(appointmentRepository.save(appointment));
     }
-
-    // ─── Read ─────────────────────────────────────────────────────────────────
 
     public List<AppointmentDto> getAllAppointments() {
         return appointmentRepository.findAll()
@@ -222,7 +210,6 @@ public class AppointmentService {
         AppointmentEntity appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppointmentNotFound(" with id " + id));
 
-        // Vérification que l'utilisateur courant est le client ou un admin
         UserEntity currentUser = userService.getCurrentUserEntity();
         boolean isAdmin = currentUser.getRole().equals("ROLE_ADMIN") || currentUser.getRole().equals("ADMIN");
         boolean isOwner = appointment.getClient() != null &&

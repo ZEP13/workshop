@@ -168,6 +168,7 @@ public class UserService implements UserDetailsService {
 
         Specification<UserEntity> spec = Specification
                 .where(hasLastName(lastName))
+                .and(hasId(id))
                 .and(hasFirstName(firstName))
                 .and(hasEmail(email))
                 .and(hasRole(role))
