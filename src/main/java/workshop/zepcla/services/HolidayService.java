@@ -19,4 +19,22 @@ public class HolidayService {
         HolidayEntity entity = mapper.toCreationEntity(dto);
         repo.save(entity);
     }
+
+    public void deleteHoliday(Long id) {
+        repo.deleteById(id);
+    }
+
+    public void updateHoliday(Long id, HolidayCreationDto dto) {
+        HolidayEntity entity = mapper.toCreationEntity(dto);
+        entity.setId(id);
+        repo.save(entity);
+    }
+
+    public HolidayEntity getHolidayById(Long id) {
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("Holiday not found"));
+    }
+
+    public Iterable<HolidayEntity> getAllHolidays() {
+        return repo.findAll();
+    }
 }

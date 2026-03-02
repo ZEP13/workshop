@@ -20,4 +20,22 @@ public class BreakService {
         repo.save(entity);
     }
 
+    public void deleteBreak(Long id) {
+        repo.deleteById(id);
+    }
+
+    public void updateBreak(Long id, BreakCreationDto dto) {
+        BreakEntity entity = mapper.toCreationEntity(dto);
+        entity.setId(id);
+        repo.save(entity);
+    }
+
+    public BreakEntity getBreakById(Long id) {
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("Break not found"));
+    }
+
+    public Iterable<BreakEntity> getAllBreaks() {
+        return repo.findAll();
+    }
+
 }

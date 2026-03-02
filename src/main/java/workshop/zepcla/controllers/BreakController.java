@@ -18,4 +18,28 @@ public class BreakController {
     public void createHoliday(@RequestBody HolidayCreationDto dto) {
         service.createHoliday(dto);
     }
+
+    @RequestMapping("/getAll")
+    public void getAllHolidays() {
+        service.getAllHolidays();
+
+    }
+
+    @RequestMapping("/getById")
+    public void getHolidayById(Long id) {
+        service.getHolidayById(id);
+
+    }
+
+    @RequestMapping("/delete/{id}")
+    public void deleteHoliday(Long id) {
+        service.deleteHoliday(id);
+
+    }
+
+    @RequestMapping("/update/{id}")
+    public void updateHoliday(Long id, @RequestBody HolidayCreationDto dto) {
+        service.updateHoliday(id, dto);
+
+    }
 }

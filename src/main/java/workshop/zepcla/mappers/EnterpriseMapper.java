@@ -21,7 +21,7 @@ public class EnterpriseMapper {
         return enterpriseEntity;
     }
 
-    public EnterpriseDto tDto(EnterpriseEntity enterpriseEntity) {
+    public EnterpriseDto toDto(EnterpriseEntity enterpriseEntity) {
         if (enterpriseEntity == null) {
             return null;
         }
