@@ -64,6 +64,7 @@ public class AppointmentMapper {
                 creatorDto,
                 appointment.getDuration(),
                 appointment.getStatus(),
+                appointment.getEmailClient(),
                 enterpriseDto);
     }
 
@@ -112,7 +113,7 @@ public class AppointmentMapper {
 
         String clientEmail = appointment.getClient() != null
                 ? appointment.getClient().getEmail()
-                : null;
+                : appointment.getEmailClient();
 
         return new AppointmentPublicCreationDto(
                 appointment.getDate(),

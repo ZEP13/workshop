@@ -25,6 +25,8 @@ public interface AppointmentRepository
 
     List<AppointmentEntity> findByClient(UserEntity client);
 
+    List<AppointmentEntity> findByClientAndMail(UserEntity client, String mail);
+
     List<AppointmentEntity> findByDate(LocalDate date);
 
     List<AppointmentEntity> findByClientAndDate(UserEntity user, LocalDate date);

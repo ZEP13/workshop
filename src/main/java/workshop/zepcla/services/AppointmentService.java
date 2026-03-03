@@ -51,7 +51,6 @@ public class AppointmentService {
     public boolean validateAppointmentTimeIsFree(LocalDate date, LocalTime time, Long enterpriseId) {
         AppointmentEntity freeTime = appointmentRepository.findByDateAndTimeAndEnterprise_Id(date, time, enterpriseId);
         if (freeTime == null) {
-            // No appointment exists at this time → it's free
             return true;
         }
         return "CANCELLED".equals(freeTime.getStatus());
@@ -267,7 +266,7 @@ public class AppointmentService {
 
     public List<AppointmentDto> getAppointmentsByCurrentClient() {
         UserEntity clientEntity = userService.getCurrentUserEntity();
-        return appointmentRepository.findByClient(clientEntity)
+        return appointmentRepository.findByClientAndMail(clientEntity, clientEntity.getEmail())
                 .stream()
                 .map(appointmentMapper::toDto)
                 .collect(Collectors.toList());

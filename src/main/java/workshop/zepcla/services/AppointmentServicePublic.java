@@ -41,6 +41,14 @@ public class AppointmentServicePublic {
                     "on " + date + " at " + time + ". Please select a valid date");
         }
 
+        if (dto.email_client() == null || dto.email_client().isEmpty()) {
+            throw new NoAvaibleAppointment("Email is required for appointment creation");
+        }
+
+        if (dto.duration() == null || dto.duration() <= 0) {
+            throw new NoAvaibleAppointment("Duration must be a positive integer");
+        }
+
         EnterpriseEntity enterprise = enterpriseRepository.findById(enterpriseId)
                 .orElseThrow(() -> new AppointmentNotFound(
                         "Enterprise with id " + enterpriseId + " not found"));

@@ -12,6 +12,7 @@ public record AppointmentDto(
         UserDto id_client,
         UserDto id_creator,
         Integer duration,
+        String email_client,
         String status,
         EnterpriseDto id_enterprise) {
 }
