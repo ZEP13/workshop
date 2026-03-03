@@ -19,11 +19,26 @@
             <column name="closing_time" type="TIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="days_off" type="VARCHAR(20)">
-                <constraints nullable="true"/>
-            </column>
             <column name="created_at" type="TIMESTAMP"
                 defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="003b-create-enterprise-days-off" author="CLBI">
+        <createTable tableName="enterprise_days_off">
+            <column name="enterprise_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_off" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="enterprise_days_off"
+            baseColumnNames="enterprise_id"
+            referencedTableName="enterprise"
+            referencedColumnNames="id"
+            constraintName="fk_enterprise_days_off"
+            onDelete="CASCADE"/>
     </changeSet>
 </databaseChangeLog>
