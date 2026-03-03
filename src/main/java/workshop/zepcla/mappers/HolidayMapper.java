@@ -33,7 +33,7 @@ public class HolidayMapper {
                 entity.getName(),
                 entity.getStartDate(),
                 entity.getEndDate(),
-                null, // on verra ça juste après
+                null,
                 entity.getDescription());
     }
 }

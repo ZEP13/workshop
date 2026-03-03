@@ -26,6 +26,7 @@ import workshop.zepcla.exceptions.enterpriseException.EnterpriseClosedException;
 import workshop.zepcla.exceptions.userException.UserIdNotFoundException;
 import workshop.zepcla.mappers.AppointmentMapper;
 import workshop.zepcla.repositories.AppointmentRepository;
+import workshop.zepcla.repositories.EnterpriseRepository;
 import workshop.zepcla.repositories.UserRepository;
 
 import java.time.LocalDate;
@@ -45,9 +46,9 @@ public class AppointmentService {
     private final AppointmentMapper appointmentMapper;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final EnterpriseService enterpriseService;
+    private final EnterpriseRepository enterpriseRepository;
 
-    private void validateEnterpriseAvailability(EnterpriseEntity enterprise,
+    public void validateEnterpriseAvailability(EnterpriseEntity enterprise,
             LocalDate date,
             LocalTime time,
             Integer duration) {
@@ -106,8 +107,9 @@ public class AppointmentService {
                     "on " + date + " at " + time + ". Please select a valid date");
         }
 
-        EnterpriseEntity enterprise = enterpriseService.getEnterpriseById(dto.enterpriseId());
-
+        Long id = dto.enterpriseId();
+        EnterpriseEntity enterprise = enterpriseRepository.findById(id)
+                .orElseThrow(() -> new EnterpriseClosedException("Enterprise with id " + id + " not found"));
         validateEnterpriseAvailability(enterprise, date, time, dto.duration());
 
         UserEntity clientEntity = userService.getCurrentUserEntity();
@@ -144,7 +146,9 @@ public class AppointmentService {
                     "You are not allowed to create an appointment as admin");
         }
 
-        EnterpriseEntity enterprise = enterpriseService.getEnterpriseById(creatorEntity.getEnterprise().getId());
+        Long id = userService.getCurrentUserEntity().getEnterprise().getId();
+        EnterpriseEntity enterprise = enterpriseRepository.findById(id)
+                .orElseThrow(() -> new EnterpriseClosedException("Enterprise with id " + id + " not found"));
 
         validateEnterpriseAvailability(enterprise, date, time, dto.duration());
 

@@ -28,6 +28,7 @@ public class EnterpriseService {
     private final HolidayMapper holidayMapper;
     private final BreakService breakService;
     private final HolidayService holidayService;
+    private final UserService userService;
 
     public EnterpriseEntity createEnterprise(EnterpriseCreationDto dto) {
 
@@ -52,7 +53,9 @@ public class EnterpriseService {
         repo.delete(entity);
     }
 
-    public EnterpriseEntity updateEnterprise(Long id, EnterpriseCreationDto dto) {
+    public EnterpriseEntity updateEnterprise(EnterpriseCreationDto dto) {
+
+        Long id = userService.getCurrentUserEntity().getEnterprise().getId();
         EnterpriseEntity existing = repo.findById(id)
                 .orElseThrow(() -> new EnterpriseNotFound("with id " + id));
 
@@ -68,7 +71,8 @@ public class EnterpriseService {
         return repo.save(existing);
     }
 
-    public EnterpriseEntity getEnterpriseById(Long id) {
+    public EnterpriseEntity getEnterpriseById() {
+        Long id = userService.getCurrentUserEntity().getEnterprise().getId();
         return repo.findById(id).orElseThrow(() -> new EnterpriseNotFound("with id " + id));
     }
 
@@ -76,9 +80,10 @@ public class EnterpriseService {
         return repo.findAll();
     }
 
-    public EnterpriseDto getEnterpriseWithDetails(Long id) {
+    public EnterpriseDto getEnterpriseWithDetails() {
 
-        EnterpriseEntity enterprise = getEnterpriseById(id);
+        Long id = userService.getCurrentUserEntity().getEnterprise().getId();
+        EnterpriseEntity enterprise = getEnterpriseById();
 
         List<BreakDto> breakDtos = breakService
                 .getBreaksByEnterpriseId(id)
@@ -102,9 +107,11 @@ public class EnterpriseService {
                 holidayDtos);
     }
 
-    public EnterpriseDto getEnterpriseBreakDetails(Long id) {
+    public EnterpriseDto getEnterpriseBreakDetails() {
 
-        EnterpriseEntity enterprise = getEnterpriseById(id);
+        Long id = userService.getCurrentUserEntity().getEnterprise().getId();
+
+        EnterpriseEntity enterprise = getEnterpriseById();
 
         List<BreakDto> breakDtos = breakService
                 .getBreaksByEnterpriseId(id)
@@ -122,9 +129,10 @@ public class EnterpriseService {
                 null);
     }
 
-    public EnterpriseDto getEnterpriseHolidayDetails(Long id) {
+    public EnterpriseDto getEnterpriseHolidayDetails() {
 
-        EnterpriseEntity enterprise = getEnterpriseById(id);
+        Long id = userService.getCurrentUserEntity().getEnterprise().getId();
+        EnterpriseEntity enterprise = getEnterpriseById();
 
         List<HolidayDto> holidayDtos = holidayService
                 .getHolidaysByEnterpriseId(id)

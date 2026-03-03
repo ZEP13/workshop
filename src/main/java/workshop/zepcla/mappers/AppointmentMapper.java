@@ -9,6 +9,7 @@ import workshop.zepcla.dto.appointmentDto.AppointmentPublicCreationDto;
 import workshop.zepcla.dto.enterpriseDto.EnterpriseDto;
 import workshop.zepcla.dto.userDto.UserDto;
 import workshop.zepcla.entities.AppointmentEntity;
+import workshop.zepcla.entities.EnterpriseEntity;
 import workshop.zepcla.entities.UserEntity;
 
 @Component
@@ -124,12 +125,18 @@ public class AppointmentMapper {
     public AppointmentEntity toEntityForPublicCreation(AppointmentPublicCreationDto dto) {
         if (dto == null) {
             return null;
+
         }
+
+        EnterpriseEntity enterprise = new EnterpriseEntity();
+        enterprise.setId(dto.enterpriseId());
 
         AppointmentEntity entity = new AppointmentEntity();
         entity.setDate(dto.date_appointment());
         entity.setTime(dto.time_appointment());
         entity.setDuration(dto.duration());
+        entity.setEnterprise(enterprise);
+        entity.setEmailClient(dto.email_client());
 
         return entity;
     }

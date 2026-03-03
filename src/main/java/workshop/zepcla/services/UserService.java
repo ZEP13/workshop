@@ -84,6 +84,7 @@ public class UserService implements UserDetailsService {
         if (dto.enterpriseId() == null) {
             throw new IllegalArgumentException("Enterprise is required for admin creation");
         }
+
         save(dto);
     }
 

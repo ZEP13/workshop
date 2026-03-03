@@ -3,6 +3,7 @@ package workshop.zepcla.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.annotation.security.PermitAll;
 import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.appointmentDto.AppointmentPublicCreationDto;
 import workshop.zepcla.services.AppointmentServicePublic;
@@ -16,6 +17,7 @@ public class AppointmentControllerWithoutAuth {
 
     private final AppointmentServicePublic appointmentService;
 
+    @PermitAll
     @PostMapping("/create")
     public ResponseEntity<?> createRdvWithoutAccount(@RequestBody AppointmentPublicCreationDto dto) {
         appointmentService.createAppointmentWithoutAccount(dto);
@@ -24,12 +26,14 @@ public class AppointmentControllerWithoutAuth {
     }
 
     // http://localhost:8080/appointments/public/consult?token=654e8fbc-8107-443f-9d58-1baf80e47be4
+    @PermitAll
     @GetMapping("/consult")
     public ResponseEntity<?> consultRdv(@RequestParam String token) {
         var responseDto = appointmentService.getAppointmentByToken(token);
         return ResponseEntity.ok(responseDto);
     }
 
+    @PermitAll
     @PutMapping("/cancel")
     public ResponseEntity<?> cancelRdv(@RequestParam String token) {
         var responseDto = appointmentService.cancelAppointmentByToken(token);

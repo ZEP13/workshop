@@ -34,6 +34,9 @@
             <column name="token" type="VARCHAR(255)">
                 <constraints nullable="true" unique="true"/>
             </column>
+            <column name="email_client" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
             <column name="created_at" type="TIMESTAMP"
                 defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>

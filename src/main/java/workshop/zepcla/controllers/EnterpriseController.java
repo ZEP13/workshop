@@ -29,41 +29,41 @@ public class EnterpriseController {
         return ResponseEntity.ok(service.getAllEnterprises());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/MyEnterprise")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<EnterpriseEntity> getEnterpriseById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getEnterpriseById(id));
+    public ResponseEntity<EnterpriseEntity> getEnterpriseById() {
+        return ResponseEntity.ok(service.getEnterpriseById());
     }
 
-    @GetMapping("/{id}/details")
+    @GetMapping("/MyEnterprise/details")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<EnterpriseDto> getEnterpriseWithDetails(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getEnterpriseWithDetails(id));
+    public ResponseEntity<EnterpriseDto> getEnterpriseWithDetails() {
+        return ResponseEntity.ok(service.getEnterpriseWithDetails());
     }
 
-    @GetMapping("/{id}/breaks")
+    @GetMapping("/MyEnterprise/breaks")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<EnterpriseDto> getEnterpriseBreakDetails(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getEnterpriseBreakDetails(id));
+    public ResponseEntity<EnterpriseDto> getEnterpriseBreakDetails() {
+        return ResponseEntity.ok(service.getEnterpriseBreakDetails());
     }
 
-    @GetMapping("/{id}/holidays")
+    @GetMapping("/MyEnterprise/holidays")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<EnterpriseDto> getEnterpriseHolidayDetails(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getEnterpriseHolidayDetails(id));
+    public ResponseEntity<EnterpriseDto> getEnterpriseHolidayDetails() {
+        return ResponseEntity.ok(service.getEnterpriseHolidayDetails());
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<Void> deleteEnterprise(@PathVariable Long id) {
         service.deleteEnterprise(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/MyEnterprise/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<EnterpriseEntity> updateEnterprise(@PathVariable Long id,
+    public ResponseEntity<EnterpriseEntity> updateEnterprise(
             @RequestBody EnterpriseCreationDto dto) {
-        return ResponseEntity.ok(service.updateEnterprise(id, dto));
+        return ResponseEntity.ok(service.updateEnterprise(dto));
     }
 }
