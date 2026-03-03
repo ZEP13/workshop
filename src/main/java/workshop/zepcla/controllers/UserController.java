@@ -1,16 +1,9 @@
 package workshop.zepcla.controllers;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import workshop.zepcla.dto.userDto.UserCreationDto;
 import workshop.zepcla.dto.userDto.UserDto;
@@ -18,82 +11,84 @@ import workshop.zepcla.services.UserService;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/logged/users")
 public class UserController {
 
     private final UserService userService;
 
-    @PutMapping("/updateCurrentUser")
-    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
-    public void updateCurrentUser(@RequestBody UserCreationDto request) {
-	userService.updateCurrentUser(request);
+    @PutMapping("/update/me")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
+    public ResponseEntity<Void> updateCurrentUser(@RequestBody UserCreationDto request) {
+        userService.updateCurrentUser(request);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public void update(@RequestBody UserCreationDto request, @PathVariable Long id) {
-	userService.updateUser(id, request);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> update(@RequestBody UserCreationDto request, @PathVariable Long id) {
+        userService.updateUser(id, request);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public void delete(@PathVariable Long id) {
-        userService.deleteUserById(id);
-    }
-
-    @DeleteMapping("/deleteCurrentUser")
-    @PreAuthorize("hasAnyRole('CLIENT','','ADMIN')")
-    public void deleteCurrentUser() {
-		userService.deleteCurrentUser();
-	}
-
-
-    @GetMapping("/current")
-    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
-    public UserDto getCurrentUser() {
-        Long userId = userService.getCurrentUserId();
-        return userService.getUserById(userId);
-    }
-
-    @GetMapping("/getById/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public UserDto getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
-    }
-
-    @GetMapping("/getUserByEmail")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public UserDto getUserByEmail(@RequestParam String email) {
-		return userService.getUserByEmail(email);
-    }
-
-    @GetMapping("/getuserByFirstAndLastName")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public UserDto getUserByFirstAndLastName(@RequestParam String firstName, @RequestParam String lastName) {
-	return userService.getUserByFirstAndLastName(firstName, lastName);
-    } 
-
-    @GetMapping("/getAll")
     @PreAuthorize("hasRole('ADMIN')")
-    public Iterable<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        userService.deleteUserById(id);
+        return ResponseEntity.noContent().build();
     }
 
-
-   @GetMapping("/superSearch")
-   @PreAuthorize("hasRole('ADMIN', 'CLIENT')")
-
-    public Page<UserDto> superSearch(
-	@RequestParam(defaultValue = "0") int page,
-	@RequestParam(defaultValue = "10") int size,
-	@RequestParam(required = false) Long id,
-	@RequestParam(required = false) String firstName,
-	@RequestParam(required = false) String lastName,
-	@RequestParam(required = false) String email,
-	@RequestParam(required = false) String role,
-	@RequestParam(required = false) String phoneNumber
-    ){
-	return userService.superSearch(page, size, id, firstName, lastName, email, role, phoneNumber);
+    @DeleteMapping("/delete/me")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
+    public ResponseEntity<Void> deleteCurrentUser() {
+        userService.deleteCurrentUser();
+        return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
+    public ResponseEntity<UserDto> getCurrentUser() {
+        Long userId = userService.getCurrentUserId();
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping("/by-email")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(userService.getUserByEmail(email));
+    }
+
+    @GetMapping("/by-name")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDto> getUserByFirstAndLastName(
+            @RequestParam String firstName,
+            @RequestParam String lastName) {
+        return ResponseEntity.ok(userService.getUserByFirstAndLastName(firstName, lastName));
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Iterable<UserDto>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<UserDto>> superSearch(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String phoneNumber) {
+        return ResponseEntity.ok(userService.superSearch(
+                page, size, id, firstName, lastName, email, role, phoneNumber));
+    }
 }
